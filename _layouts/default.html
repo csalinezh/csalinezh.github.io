@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+{% include head.html %}
+<body class="site-container">
+<header class="site-header-wrapper">
+<div id="site-header" class="content-container">
+  <div class="site-title-container">
+    <h1 id="site-title"><a href="{{ site.baseurl }}">{{ site.title }}</a></h1>
+    <div id="site-tagline">{{ site.tagline }}</div>
+  </div>
+  {% comment %} FIXME: Properly implement page list {% endcomment %}
+  <nav id="header-menu"><ul class="horizontal-list">
+    <li><a href="{{ site.baseurl }}archive/">归档</a></li>
+    <li><a href="{{ site.baseurl }}about/">关于</a></li>
+  </ul></nav>
+</div>
+</header>
+<div class="main-container content-container">
+<main id="main-content">
+  {{ content }}
+</main>
+<aside id="site-sidebar">
+<section id="link-icon">
+  <ul class="horizontal-list">
+    <li><a href="{{ site.baseurl }}feed.xml" title="Atom Feed"><svg class="icon" viewBox="0 0 448 512" style="color: #ee802f;"><title>Feed Icon</title><use xlink:href="{{ '/assets/icons/sprites.svg' | relative_url }}#feed"></use></svg></a></li>
+    <li><a href="https://github.com/csalinezh" title="GitHub Profile"><svg class="icon" viewBox="0 0 496 512"><title>GitHub Logo</title><use xlink:href="{{ '/assets/icons/sprites.svg' | relative_url }}#github"></use></svg></a></li>
+  </ul>
+</section>
+{% if page.layout != "archive" and page.layout != "home" %}
+<section id="recent-posts">
+  <h2>Recent Posts</h2>
+  <ol class="vertical-list">
+  {% for post in site.posts %}
+    <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+  {% endfor %}
+  </ol>
+</section>
+{% endif %}
+<section id="category-list">
+  <h2>Categories</h2>
+  <ul class="vertical-list">
+  {% for category in site.categories %}
+    {% capture category_name %}{{ category | first }}{% endcapture %}
+    <li><a href="{{ site.baseurl }}category/{{ category_name }}/">{{ category_name }}</a></li>
+  {% endfor %}
+  </ul>
+</section>
+{% comment %}
+<section id="tag-cloud">
+  <ul>
+  </ul>
+</section>
+<section id="friend-links">
+  <ul>
+  </ul>
+</section>
+{% endcomment %}
+</aside>
+</div>
+<footer class="site-footer-wrapper">
+  <div id="license" class="content-container">
+  若无另行说明，本站内容以<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享-署名-相同方式共享 4.0 协议国际版</a>授权。
+  </div>
+</footer>
+</body>

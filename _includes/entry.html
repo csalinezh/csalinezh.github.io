@@ -1,0 +1,21 @@
+<article class="entry">
+  <header class="entry-header">
+    {% if post.image %}
+    <div class="entry-image">
+      <img src="{{ post.image }}" alt="">
+    </div>
+    {% endif %}
+    <h3 class="entry-title">
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+    </h3>
+  </header>
+  <div class="entry-excerpt">
+    {% if post.excerpt %}
+      {{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}
+      <div class="read-more"><a href="{{ post.url | relative_url }}" class="more-link">&gt; 阅读全文</a></div>
+    {% endif %}
+  </div>
+  <footer class="entry-meta">
+    {% include page-meta.html %}
+  </footer>
+</article>

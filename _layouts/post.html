@@ -1,0 +1,34 @@
+---
+layout: default
+---
+
+{% comment %}page and post actually shares a large portion of the design.{% endcomment %}
+<div id="page-container">
+<article>
+  <header class="page-intro">
+    <h1 id="page-title">{{ page.title }}</h1>
+    {% assign post = page %}
+    <div class="entry-meta">
+    {% include page-meta.html %}
+    </div>
+  </header>
+  <div id="markdown-content">
+  {{ content }}
+  </div>
+</article>
+<div id="post-nav">
+  {% if page.next %}
+  <div id="post-nav-next" class="post-nav-item"><a href="{{ page.next.url }}">&larr; {{ page.next.title }}</a></div>
+  {% else %}
+  <div id="post-nav-next" class="post-nav-item post-nav-item-inactive">|&larr;</div>
+  {% endif %}
+  {% if page.previous %}
+  <div id="post-nav-prev" class="post-nav-item"><a href="{{ page.previous.url }}">{{ page.previous.title }} &rarr;</a></div>
+  {% else %}
+  <div id="post-nav-prev" class="post-nav-item post-nav-item-inactive">&rarr;|</div>
+  {% endif %}
+</div>
+{% comment %}
+disqusjs
+{% endcomment %}
+</div>

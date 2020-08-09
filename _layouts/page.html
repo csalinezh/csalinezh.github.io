@@ -1,0 +1,22 @@
+---
+layout: default
+---
+
+{% comment %}page and post actually shares a large portion of the design.{% endcomment %}
+<div id="page-container">
+<article>
+  <header class="page-intro">
+    <h1 id="page-title">{{ page.title }}</h1>
+    {% assign post = page %}
+    <div class="page-meta">
+    {% include page-meta.html %}
+    </div>
+  </header>
+  <div id="markdown-content">
+  {{ content }}
+  </div>
+</article>
+{% comment %}
+disqusjs
+{% endcomment %}
+</div>

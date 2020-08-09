@@ -1,0 +1,262 @@
+$content-area-font-factor: 17/16; // Just assume the user uses 16px and enlarge it to 17px. Sorry to those who want body font size to be exactly same as their setting.
+$content-width: 37em;
+$sidebar-width: 12rem;
+$site-width: ($content-width/1em*$content-area-font-factor*1rem)+$sidebar-width+1rem*4;
+$footer-height: 6em;
+$monospace-font: "Source Code Pro", "SF Mono", "Menlo", "Consolas", monospace;
+
+/*
+html {
+}
+*/
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif, "Segoe UI Emoji", "Noto Color Emoji";
+  background-color: #f1f1f1;
+}
+
+.site-container {
+  display: flex;
+  flex-direction: column;
+}
+
+a:visited {
+  color: unset;
+}
+
+.content-container {
+  max-width: $site-width;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.site-header-wrapper {
+  background-color: #ffb300;
+}
+
+#site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0.3rem 1.2rem 0.5rem;
+  line-height: initial;
+}
+
+#site-title, .entry-title, #page-title {
+  font-weight: normal;
+}
+
+#site-title {
+  font-size: 2.5em;
+  color: #3E2723; // Brown 900
+/*
+  >a {
+    text-decoration: none;
+  }*/
+}
+
+#site-tagline {
+  color: #795548; // Lime 900
+  margin-top: 0.5em;
+}
+
+.horizontal-list li {
+  display: inline-block;
+}
+
+#header-menu {
+  font-size: 1.2rem;
+  color: #6D4C41;
+
+  li {
+  	margin-left: 1em;
+  }
+}
+
+.main-container {
+  flex: 1 0 auto;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#main-content {
+  font-size: $content-area-font-factor*100%;
+  max-width: $content-width;
+  flex: 0 1 auto;
+  padding: 1rem 2rem 0;
+}
+
+#main-content, #site-sidebar {
+  background-color: #fff;
+  margin: 0.5rem 0.5rem;
+}
+
+.entry {
+  padding-bottom: 1rem;
+}
+
+.entry-header {
+  margin-bottom: 0.75rem;
+}
+
+.entry-image, #markdown-content>p>img {
+  width: calc(100% + 4rem);
+  margin-left: -2rem;
+}
+
+@media(max-width:450px) {
+  #main-content {
+    padding: 1rem 1rem 0;
+  }
+
+  .entry-image, #markdown-content>p>img {
+    width: calc(100% + 3rem);
+    margin-left: -1.5rem;
+  }
+}
+
+/*
+https://stackoverflow.com/questions/12121090/responsively-change-div-size-keeping-aspect-ratio/#24175439
+https://stackoverflow.com/questions/1495407/maintain-the-aspect-ratio-of-a-div-with-css
+https://css-tricks.com/aspect-ratio-boxes/
+
+Can be simplified when aspect-ratio property gets enough support.
+*/
+.entry-image {
+  position: relative;
+  padding-bottom: 1/2.5*100%;
+  margin-bottom: 0.75em;
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+/*
+  &::before {
+    content: "";
+    float: left;
+    padding-bottom: 1/2.5*100%;
+  }
+  &::after{
+    content: "";
+    display: table;
+    clear: both;
+  }
+*/
+}
+
+.entry-title {
+  font-size: 1.5em;
+}
+
+.entry-excerpt {
+  font-size: 0.9em;
+  margin: 0.5rem 0;
+}
+
+.entry-list > .entry + .entry {
+  border-top: 1px solid #616161;
+  padding-top: 1.25rem;
+}
+
+.read-more {
+  margin: 0.3rem 0 0.4rem;
+  color: #BF360C; // Deep Orange 900
+  font-family: $monospace-font;
+  font-size: 1rem;
+
+  @media (max-width: 450px) {
+    font-size: 1.15rem;
+  }
+}
+
+.entry-meta {
+  font-size: 0.7em;
+  color: #006064; // Cyan 900
+  margin-bottom: 0.25rem;
+
+  li + li {
+    margin-left: 1.5em;
+  }
+}
+
+.meta-content {
+  margin-left: 0.3em;
+}
+
+#site-sidebar {
+  flex: 1 2 $sidebar-width;
+  max-width: 18em;
+  padding: 1rem 1rem;
+
+  > section + section {
+    margin-top: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.2rem;
+  }
+}
+
+ul.vertical-list, ol.vertical-list {
+  padding-left: 1em;
+}
+
+.vertical-list li {
+  margin: 0.5em 0;
+}
+
+#link-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+
+  >ul {
+    display: table;
+    width: 100%;
+
+    >li {
+      display: table-cell;
+      text-align: center;
+    }
+
+    .icon {
+      vertical-align: middle;
+    }
+  }
+}
+
+.site-footer-wrapper {
+  flex: 0 0 auto;
+  height: $footer-height;
+  padding: 0.5rem 0;
+  background-color: #0097a7;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  >.content-container {
+    padding: 0 0.5rem;
+  }
+}
+
+#license a:link {
+  text-decoration: underline;
+}
+
+.icon {
+  height: 1em;
+}

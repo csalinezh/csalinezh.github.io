@@ -1,0 +1,24 @@
+title: 咸湖的盐鱼
+tagline: Soaked in brackish brine.
+description: 一条在盐滩上弹跳的咸鱼留下的痕迹。
+url: https://soaked.in
+baseurl: /
+lang: zh-CN
+timezone: Asia/Shanghai
+
+permalink: /:year/:month/:title/
+
+plugins:
+  - jekyll-paginate
+
+paginate: 10
+paginate_path: /page:num/
+
+sass:
+  style: compressed
+
+include:
+  - /_pages
+
+exclude:
+  - /README.md

@@ -1,0 +1,52 @@
+/*
+Awesome referrences:
+https://github.com/sindresorhus/modern-normalize
+https://dev.to/hankchizljaw/a-modern-css-reset-6p3
+https://github.com/sofish/typo.css
+*/
+
+
+/*
+Use border-box to avoid messy calculations
+https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+
+https://wiki.csswg.org/ideas/mistakes
+*/
+html {
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body,
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+ul[class],
+ol[class] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+a:link {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: underline;
+}

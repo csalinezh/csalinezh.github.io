@@ -1,0 +1,14 @@
+---
+layout: default
+---
+
+{% if paginator.page > 1 %}
+<header class="section-title">
+  <h2>Page {{ paginator.page }} of {{ paginator.total_pages }}</h2>
+</header>
+{% endif %}
+<div class="entries">
+  {% if site.plugins contains 'jekyll-paginate' %}
+    {% include posts.html %}
+  {% endif %}
+</div>
