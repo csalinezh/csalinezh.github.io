@@ -1,0 +1,12 @@
+---
+layout: default
+---
+
+<h2 class="section-title">{{ page.date | date: '%Y' }}年的文章</h2>
+<div class="entries">
+  <div class="entry-list">
+    {% for post in page.posts %}
+      {% include entry.html %}
+    {% endfor %}
+  </div>
+</div>

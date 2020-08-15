@@ -30,7 +30,7 @@
 <section id="recent-posts">
   <h2>Recent Posts</h2>
   <ol class="vertical-list">
-  {% for post in site.posts %}
+  {% for post in site.posts limit: 5 %}
     <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
   {% endfor %}
   </ol>
@@ -41,7 +41,7 @@
   <ul class="vertical-list">
   {% for category in site.categories %}
     {% capture category_name %}{{ category | first }}{% endcapture %}
-    <li><a href="{{ site.baseurl }}category/{{ category_name }}/">{{ category_name }}</a></li>
+    <li><a href="{{ site.baseurl }}category/{{ category_name | slugify }}/">{{ category_name }}</a></li>
   {% endfor %}
   </ul>
 </section>

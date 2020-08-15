@@ -8,12 +8,6 @@ timezone: Asia/Shanghai
 
 permalink: /:year/:month/:title/
 
-plugins:
-  - jekyll-paginate
-
-paginate: 10
-paginate_path: /page:num/
-
 sass:
   style: compressed
 
@@ -22,3 +16,42 @@ include:
 
 exclude:
   - /README.md
+
+
+plugins:
+  - jekyll-paginate-v2
+  - jekyll-archives
+  - jekyll-sitemap
+
+pagination:
+  enabled: true
+  permalink: /page/:num/
+  sort_reverse: true
+  per_page: 8
+  trail:
+    before: 2
+    after: 2
+
+autopages:
+  enabled: true
+  tags:
+    layouts:
+      - 'autopage_tags.html'
+    title: ':tag 标签'
+    permalink: '/tag/:tag'
+    slugify:
+      mode: 'default'
+      case: false
+  categories:
+    enabled: false
+  collections:
+    enabled: false
+
+jekyll-archives:
+  enabled: ['year', 'categories']
+  layouts:
+    year: archive_year
+    categories: archive
+  permalinks:
+    year: '/:year/'
+    category: '/category/:name/'

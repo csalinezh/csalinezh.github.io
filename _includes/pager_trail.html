@@ -1,0 +1,37 @@
+<nav class="pager-container">
+<ul class="pager horizontal-list">
+  {% if paginator.previous_page %}
+  <li><a href="{{ paginator.previous_page_path | relative_url }}" aria-label="Previous page">&lt;</a></li>
+  {% else %}
+  <li class="pager-inactive" aria-label="No newer pages available">&lt;</li>
+  {% endif %}
+
+  {% assign trail_ellipsis_start = paginator.page_trail.first.num | minus: paginator.first_page %}
+  {% if trail_ellipsis_start > 0 %}
+  <li class="pager-ends"><a href="{{ paginator.first_page_path | relative_url }}" aria-label="First page, {{ paginator.first_page }}">{{ paginator.first_page }}</a></li>
+  {% if trail_ellipsis_start > 1 %}<li class="pager-ellipsis pager-ends">…</li>{% endif %}
+  {% endif %}
+
+  {% if paginator.page_trail %}
+  {% for trail in paginator.page_trail %}
+  {% if page.url == trail.path %}
+  <li class="pager-current" aria-label="Current page, {{ trail.num }}">{{ trail.num }}</li>
+  {% else %}
+  <li><a href="{{ trail.path | replace: 'index.html', '' | relative_url }}" aria-label="Page {{ trail.num }}">{{ trail.num }}</a></li>
+  {% endif %}
+  {% endfor %}
+  {% endif %}
+
+  {% assign trail_ellipsis_end = paginator.last_page | minus: paginator.page_trail.last.num %}
+  {% if trail_ellipsis_end > 0 %}
+  {% if trail_ellipsis_end > 1 %}<li class="pager-ellipsis pager-ends">…</li>{% endif %}
+  <li class="pager-ends"><a href="{{ paginator.last_page_path | relative_url }}" aria-label="Last page {{ paginator.last_page }}">{{ paginator.last_page }}</a></li>
+  {% endif %}
+
+  {% if paginator.next_page %}
+  <li><a href="{{ paginator.next_page_path | relative_url }}" aria-label="Next page">&gt;</a></li>
+  {% else %}
+  <li class="pager-inactive" aria-label="No older pages available">&gt;</li>
+  {% endif %}
+</ul>
+</nav>

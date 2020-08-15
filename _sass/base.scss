@@ -90,13 +90,18 @@ a:visited {
 #main-content {
   font-size: $content-area-font-factor*100%;
   max-width: $content-width;
-  flex: 0 1 auto;
-  padding: 1rem 2rem 0;
+  flex: 0 1 $content-width;
+  padding: 1rem 2rem;
 }
 
 #main-content, #site-sidebar {
   background-color: #fff;
   margin: 0.5rem 0.5rem;
+}
+
+.section-title {
+  font-size: 1.75em;
+  margin-bottom: 1.5rem;
 }
 
 .entry {
@@ -114,7 +119,7 @@ a:visited {
 
 @media(max-width:450px) {
   #main-content {
-    padding: 1rem 1rem 0;
+    padding: 1rem 1rem;
   }
 
   .entry-image, #markdown-content>p>img {
@@ -194,6 +199,88 @@ Can be simplified when aspect-ratio property gets enough support.
 
 .meta-content {
   margin-left: 0.3em;
+}
+
+.archive-entry-list {
+  display: table;
+}
+
+.entry-lite {
+  line-height: initial;
+  display: table-row;
+
+  .entry-title {
+    display: inline-block;
+    font-size: 1.2em;
+    margin-right: 1.25em;
+  }
+
+  .entry-meta {
+    display: inline-block;
+    padding-top: 0.5rem;
+    margin-bottom: initial;
+  }
+}
+
+.entry-lite-timestamp, .entry-lite-content {
+  display: table-cell;
+  padding-bottom: 0.8rem;
+}
+
+.entry-lite-timestamp {
+    color: #767676;
+    font-size: 0.8em;
+    padding-right: 0.4em;
+    vertical-align: top;
+
+    @media (min-width: 451px) {
+      white-space: nowrap;
+    }
+}
+
+.entry-lite-content {
+  vertical-align: middle;
+}
+
+.pager-container {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.pager {
+  display: inline-flex;
+  flex-wrap: wrap;
+  font-weight: bold;
+
+  font-family: $monospace-font;
+
+  >li {
+    padding: 0 0.4em;
+    border: 1px solid #FF9800; // Orange 500
+    border-radius: 3px;
+    margin: 0 0.25em;
+  }
+}
+
+li.pager-current {
+  background-color: #FFA000; // Amber 700
+  color: #fff;
+  border: initial;
+}
+
+li.pager-ellipsis {
+  padding: 0;
+  border: initial;
+}
+
+li.pager-inactive {
+  opacity: 0.3;
+}
+
+@media(max-width: 450px) {
+  li.pager-ends {
+    display: none;
+  }
 }
 
 #site-sidebar {

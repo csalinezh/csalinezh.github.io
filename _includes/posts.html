@@ -4,13 +4,6 @@
 {% endfor %}
 </div>
 
-<nav class="pager">
-  <ul>
-    {% if paginator.previous_page %}
-      <li><a href="{{ paginator.previous_page_path | relative_url }}" class="previous">&lt; Newer</a></li>
-    {% endif %}
-    {% if paginator.next_page %}
-      <li><a href="{{ paginator.next_page_path | relative_url }}" class="next">Older &gt;</a></li>
-    {% endif %}
-  </ul>
-</nav>
+{% if paginator.total_pages > 1 %}
+  {% include pager_trail.html %}
+{% endif %}
