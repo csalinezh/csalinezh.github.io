@@ -48,6 +48,14 @@
 #markdown-content {
   line-height: 1.7;
 
+  pre {
+    overflow-x: scroll;
+  }
+
+  p>code {
+    overflow-wrap: break-word;
+  }
+
   a:link {
     text-decoration: underline;
     color: #027ac0; // Light Blue 700-800
