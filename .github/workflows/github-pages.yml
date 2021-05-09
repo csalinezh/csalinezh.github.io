@@ -7,7 +7,7 @@ on:
 
 jobs:
   github-pages:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
@@ -17,6 +17,6 @@ jobs:
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: >-
             ${{ runner.os }}-gems-
-      - uses: helaili/jekyll-action@2.0.3
-        env:
-          JEKYLL_PAT: ${{ secrets.JEKYLL_PAT }}
+      - uses: helaili/jekyll-action@2.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
