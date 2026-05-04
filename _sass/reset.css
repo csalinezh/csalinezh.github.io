@@ -12,10 +12,11 @@ https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-pract
 
 https://wiki.csswg.org/ideas/mistakes
 */
-html {
+body {
   box-sizing: border-box;
 }
-*, *::before, *::after {
+/* *, *::before, *::after { */
+body * {
   box-sizing: inherit;
 }
 
