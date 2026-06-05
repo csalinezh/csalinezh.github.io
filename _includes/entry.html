@@ -11,7 +11,7 @@
   </header>
   <div class="entry-excerpt">
     {% if post.excerpt %}
-      {{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}
+      {{ post.excerpt | markdownify | strip_html }}
       <div class="read-more"><a href="{{ post.url | relative_url }}" class="more-link">&gt; 阅读全文</a></div>
     {% endif %}
   </div>

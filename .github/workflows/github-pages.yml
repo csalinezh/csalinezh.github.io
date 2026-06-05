@@ -7,16 +7,16 @@ on:
 
 jobs:
   github-pages:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
         with:
           path: vendor/bundle
           key: >-
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: >-
             ${{ runner.os }}-gems-
-      - uses: helaili/jekyll-action@2.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: joshlarsen/jekyll4-deploy-gh-pages@v1.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
