@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
+  <generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator>
+  <link href="https://soaked.in/feed.xml" rel="self" type="application/atom+xml" />
+  <link href="https://soaked.in/" rel="alternate" type="text/html" hreflang="zh-CN" />
+  <link rel="hub" href="https://pubsubhubbub.appspot.com/" />
+  <updated>2026-07-10T23:08:56+08:00</updated>
+  <id>https://soaked.in/feed.xml</id>
+
+  
+  
+  
+
+  
+    <title type="html">咸湖的盐鱼</title>
+  
+
+  
+    <subtitle>一条在盐滩上弹跳的咸鱼留下的痕迹。</subtitle>
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+    <entry xml:lang="en">
+      
+
+      <title type="html">Overview of NTP</title>
+      <link href="https://soaked.in/2026/07/ntp/" rel="alternate" type="text/html" title="Overview of NTP" />
+      <published>2026-07-10T23:00:00+08:00</published>
+      <updated>2026-07-10T23:00:00+08:00</updated>
+      <id>urn:uuid:cac17cf7-8ddb-41ae-908b-4ab8fd7355d0</id>
+      
+      
+        <content type="html" xml:base="https://soaked.in/2026/07/ntp/">&lt;p&gt;&lt;small&gt;This was originally a course report written on 2024-12-09. It has been edited for publishing online.&lt;/small&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;The &lt;a href=&quot;https://en.wikipedia.org/wiki/Network_Time_Protocol&quot;&gt;Network Time Protocol&lt;/a&gt; (NTP) is one of the few protocols that have been continuously used from the early Internet to the present. Its current version is NTPv4, standardized through IETF as &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc5905&quot;&gt;RFC 5905&lt;/a&gt; in 2010. It is a client/server protocol. The server listens at UDP port 123. The protocol was designed by Professor &lt;a href=&quot;https://en.wikipedia.org/wiki/David_L._Mills&quot;&gt;David L. Mills&lt;/a&gt; (Dave Mills thereafter) in the 1980s.&lt;/p&gt;
+
+&lt;p&gt;NTP solves the basic issue of accurately distributing time over the Internet. It is generally said to provide millisecond-level accuracy over the Internet. For applications needing higher accuracy, &lt;a href=&quot;https://en.wikipedia.org/wiki/Precision_Time_Protocol&quot;&gt;Precision Time Protocol&lt;/a&gt; (PTP) would fulfill the need. However, PTP would need timestamping support in NIC hardware to work well, switches along the way should also support PTP to account for delay in forwarding.&lt;sup id=&quot;fnref:TI&quot;&gt;&lt;a href=&quot;#fn:TI&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; PTP is not designed to work on public Internet.&lt;/p&gt;
+
+&lt;h2 id=&quot;basic-operation-of-ntp&quot;&gt;Basic operation of NTP&lt;/h2&gt;
+
+&lt;p&gt;The task of NTP is to synchronize the time on a local computer with a time server over the Internet. The process NTP uses is described in Section 8 of RFC 5905, which is remarkably simple (only one round trip is needed):&lt;/p&gt;
+
+&lt;p&gt;The client initiates the process by first sending a packet containing its local timestamp (&lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;1&lt;/sub&gt;&lt;/span&gt;). The server records the moment it receives the packet (&lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;2&lt;/sub&gt;&lt;/span&gt;), and later responds by sending a packet containing &lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;1&lt;/sub&gt;, t&lt;sub&gt;2&lt;/sub&gt;&lt;/span&gt; as well as the transmission time (&lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;3&lt;/sub&gt;&lt;/span&gt;). Next the client will receive the packet with &lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;1&lt;/sub&gt;, t&lt;sub&gt;2&lt;/sub&gt;&lt;/span&gt; and &lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;3&lt;/sub&gt;&lt;/span&gt; at timestamp &lt;span class=&quot;math&quot;&gt;t&lt;sub&gt;4&lt;/sub&gt;&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;Denote the advance of time the server to the client as &lt;span class=&quot;math&quot;&gt;θ&lt;/span&gt;, the round-trip delay as &lt;span class=&quot;math&quot;&gt;δ&lt;/span&gt;. Consider the relationship between timestamps for the two packets, assuming the link is symmetrical (one-way delay is &lt;span class=&quot;math&quot;&gt;δ/2&lt;/span&gt;):&lt;/p&gt;
+
+&lt;div class=&quot;math&quot;&gt;
+&lt;span class=&quot;katex-mathml&quot;&gt;&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;semantics&gt;&lt;mtable rowspacing=&quot;0.2500em&quot; columnalign=&quot;right left&quot; columnspacing=&quot;0em&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mrow&gt;&lt;/mrow&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;θ&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;δ&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;/&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;3&lt;/mn&gt;&lt;/msub&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mrow&gt;&lt;/mrow&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;4&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;θ&lt;/mi&gt;&lt;mo&gt;−&lt;/mo&gt;&lt;mi&gt;δ&lt;/mi&gt;&lt;mi mathvariant=&quot;normal&quot;&gt;/&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;annotation encoding=&quot;application/x-tex&quot;&gt;
+\begin{aligned}
+t_2 &amp;amp;= t_1 + \theta + \delta/2 \\
+t_3 &amp;amp;= t_4 + \theta - \delta/2
+\end{aligned}
+&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;
+
+&lt;span class=&quot;katex-mathml&quot;&gt;&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;semantics&gt;&lt;mtable rowspacing=&quot;0.2500em&quot; columnalign=&quot;right left&quot; columnspacing=&quot;0em&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;mi&gt;θ&lt;/mi&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mrow&gt;&lt;/mrow&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mfrac&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/mfrac&gt;&lt;mrow&gt;&lt;mo fence=&quot;true&quot;&gt;(&lt;/mo&gt;&lt;mrow&gt;&lt;mo fence=&quot;true&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;−&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo fence=&quot;true&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mrow&gt;&lt;mo fence=&quot;true&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;3&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;−&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;4&lt;/mn&gt;&lt;/msub&gt;&lt;mo fence=&quot;true&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;mo fence=&quot;true&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;mi&gt;δ&lt;/mi&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;mtd&gt;&lt;mstyle scriptlevel=&quot;0&quot; displaystyle=&quot;true&quot;&gt;&lt;mrow&gt;&lt;mrow&gt;&lt;/mrow&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;4&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;−&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;−&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;3&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;−&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/mstyle&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;annotation encoding=&quot;application/x-tex&quot;&gt;
+\begin{aligned}
+\theta &amp;amp;= \frac{1}{2}\left(\left( t_2 - t_1 \right) + \left( t_3 - t_4 \right)\right) \\
+\delta &amp;amp;= (t_4 - t_1) - (t_3 - t_2)
+\end{aligned}
+&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;p&gt;From the equation, it can be seen that the round-trip time (RTT) is objectively calculated without assumptions about the link. However, the symmetry assumption might not hold on the public Internet, degrading the accuracy of time offset estimation. This can result from asymmetrical routing paths, where the outgoing and incoming packets travel through different physical links due to routing policies. It’s also quite common for residential access networks to have asymmetrical latency between uplink and downlink due to queuing delay caused by their use of shared media. A notable example is &lt;a href=&quot;https://en.wikipedia.org/wiki/DOCSIS&quot;&gt;DOCSIS&lt;/a&gt; (using coaxial TV cable), which employs TDMA in the uplink. Uplink transmission opportunities must be requested and granted every few milliseconds, leading to 4-8ms extra delay compared to the broadcast-style downlink.&lt;sup id=&quot;fnref:DOCSISlatency2013&quot;&gt;&lt;a href=&quot;#fn:DOCSISlatency2013&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; The asymmetrical transmission delay caused by slower uplink speed in &lt;a href=&quot;https://en.wikipedia.org/wiki/ADSL&quot;&gt;ADSL&lt;/a&gt; is another example.&lt;/p&gt;
+
+&lt;p&gt;Another interesting feature of NTP is its timestamp format. Instead of the ubiquitous &lt;a href=&quot;https://en.wikipedia.org/wiki/Unix_time&quot;&gt;UNIX timestamp&lt;/a&gt; one might expect in Internet protocols, NTP uses its custom timestamp format to represent a time in UTC. The format transmitted over the wire is the 64-bit timestamp format, consisting of a 32-bit unsigned integer for seconds since the NTP epoch, followed by a 32-bit fixed-point fraction representing parts of a second. &lt;span class=&quot;math&quot;&gt;2&lt;sup&gt;32&lt;/sup&gt; - 1&lt;/span&gt; seconds is around 136 years, which becomes the length of an NTP era. We are currently in era 0, whose epoch is set to 1900-01-01 00:00:00 and will end on 2036-02-07. The era is not indicated in the wire format, therefore could cause &lt;a href=&quot;https://en.wikipedia.org/wiki/Time_formatting_and_storage_bugs&quot;&gt;overflow issues&lt;/a&gt; similar to the &lt;a href=&quot;https://en.wikipedia.org/wiki/Year_2000_problem&quot;&gt;Y2K&lt;/a&gt;, &lt;a href=&quot;https://en.wikipedia.org/wiki/Year_2038_problem&quot;&gt;2038&lt;/a&gt;, or &lt;a href=&quot;https://en.wikipedia.org/wiki/GPS_week_number_rollover&quot;&gt;GPS rollover&lt;/a&gt; problems, if not properly handled. The overflow issue is implicitly addressed through the time difference calculation algorithm, under the condition that the time on the client is within ±68 years of the server time.&lt;sup id=&quot;fnref:Mills12&quot;&gt;&lt;a href=&quot;#fn:Mills12&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;hierarchy-of-ntp-service&quot;&gt;Hierarchy of NTP service&lt;/h2&gt;
+
+&lt;p&gt;The hierarchy of NTP is envisioned to be a tree-like structure, similar to that of &lt;a href=&quot;https://en.wikipedia.org/wiki/Domain_Name_System&quot;&gt;DNS&lt;/a&gt;. The hierarchy level, called stratum, indicates a device’s distance from an authoritative time source. Atomic clocks and GPS/GNSS receivers serve as authoritative time sources (stratum-0), though they are not part of the NTP network itself. NTP servers directly connected to these sources are stratum-1 servers. Machines synchronizing directly with stratum-1 servers become stratum-2, and so on. Each synchronization level introduces additional timing uncertainty, so servers at stratum-2 and above are called secondary NTP servers. The NTP protocol specifies stratum 16 as MAXSTRAT, indicating an unsynchronized state. The stratum is an 8-bit integer in the wire format. This hierarchical structure enables the NTP service to scale (not putting all the load on primary NTP servers), while maintaining the confidence in accuracy.&lt;/p&gt;
+
+&lt;p&gt;The wire format contains a 32-bit field for “Reference ID”, which describes the kind of time reference used for a server. Primary NTP servers (stratum-1) set this field to the name (in ASCII) of time source, which is usually GPS/GNSS, but could be some radio clock signal in earlier times, or an atomic clock if it’s available for the owner of the server. For secondary servers, this field is customarily set to the IPv4 address of the server it is synchronized to. This is used to prevent timing loops within the same stratum. It can also provide traceability for the time results. Since IPv6 addresses are 128 bits and cannot fit in this field, NTPv4 specifies using a truncated MD5 hash of the IPv6 address instead.&lt;/p&gt;
+
+&lt;h2 id=&quot;implementations-of-ntp&quot;&gt;Implementations of NTP&lt;/h2&gt;
+
+&lt;p&gt;The reference implementation of NTP is the &lt;a href=&quot;https://www.eecis.udel.edu/~mills/ntp/html/index.html&quot;&gt;ntpd&lt;/a&gt;, originally written by Dave Mills. Since network jitter on the Internet is a random process, accurate synchronization requires continuous measurements rather than single updates. The NTP specification extensively details both the server selection algorithm for identifying reliable time sources and the filtering algorithm for tracking time accurately. ntpd can estimate and compensate for the local computer’s clock frequency error in software. By default, it operates in slew mode, gradually adjusting the system time to avoid sudden changes that could disrupt running applications.&lt;/p&gt;
+
+&lt;p&gt;As Dave Mills’ health declined, the development of ntpd transferred to his long-time collaborator Harlan Stenn in the 2000s. Stenn was the sole developer of ntpd for some years.&lt;sup id=&quot;fnref:N15&quot;&gt;&lt;a href=&quot;#fn:N15&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;4&lt;/a&gt;&lt;/sup&gt;&lt;sup id=&quot;fnref:N22&quot;&gt;&lt;a href=&quot;#fn:N22&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;5&lt;/a&gt;&lt;/sup&gt; ntpd suffers from the same viability issue as other classical open source software projects like openssl: While being an important piece of software infrastructure, it is overlooked and lacks a business model. The age of the software also deters newcomers from participation. Stenn has since found the &lt;a href=&quot;https://www.nwtime.org&quot;&gt;Network Time Foundation&lt;/a&gt; to support the development of ntpd. Compared to the last time I checked back in early 2023, the development still happens in a &lt;a href=&quot;https://en.wikipedia.org/wiki/BitKeeper&quot;&gt;BitKeeper&lt;/a&gt; repository, but a GitHub mirror &lt;a href=&quot;https://github.com/ntp-project/ntp/issues/1&quot;&gt;appears to have&lt;/a&gt; been set up. However, the project still faces infrastructure maintenance challenges, as evidenced by persistent 502 errors from the &lt;a href=&quot;https://support.ntp.org&quot;&gt;support.ntp.org&lt;/a&gt; website.&lt;/p&gt;
+
+&lt;p&gt;Another popular NTP implementation is &lt;a href=&quot;https://chrony-project.org&quot;&gt;chrony&lt;/a&gt;. It is included as the default NTP server in RHEL since RHEL 7. Developed by Red Hat employees, chrony is a newer piece of software and is more actively developed, compared to the mature but stagnant state of ntpd. In a comparison page made by chrony, they claim to have better performance in terms of convergence (synchronization) speed and accuracy than ntpd.&lt;sup id=&quot;fnref:Chrony&quot;&gt;&lt;a href=&quot;#fn:Chrony&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;6&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;Other prominent NTP server implementations include &lt;a href=&quot;https://www.openntpd.org&quot;&gt;OpenNTPD&lt;/a&gt;, developed by the OpenBSD team, as well as &lt;a href=&quot;https://www.ntpsec.org&quot;&gt;NTPsec&lt;/a&gt;, forked from ntpd with clean ups.&lt;/p&gt;
+
+&lt;p&gt;On modern desktop Linux distributions, time synchronization is typically handled by &lt;a href=&quot;https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html&quot;&gt;systemd-timesyncd&lt;/a&gt;. This is actually not a full NTP implementation, but a Simple Network Time Protocol (SNTP) client. SNTP is a subset of NTP that is oriented towards one-off operation. It does not implement the complex tracking algorithms as a full NTP implementation does.&lt;/p&gt;
+
+&lt;h2 id=&quot;security-issues-with-ntp&quot;&gt;Security issues with NTP&lt;/h2&gt;
+
+&lt;p&gt;The early Internet environment had a sense of trust and was much friendlier than today’s Internet, which is plagued by bots and malicious infiltrations. Early Internet protocols tend to be designed without security and defense mechanisms. Following the trend of encrypting Internet traffic (as seen with the uptake of HTTPS after 2015), Network Time Security (NTS) is an extension to NTP that uses TLS-based encryption to defend against man-in-the-middle (MITM) attacks. However, no major operating system has yet shipped NTS support in their default time synchronization services.&lt;/p&gt;
+
+&lt;p&gt;NTP shares a common vulnerability with DNS: UDP-based protocols can be exploited for reflected amplification DDoS attacks through IP spoofing. Unlike TCP, which requires a bilateral handshake, UDP’s connectionless nature makes such attacks possible. The attack’s effectiveness is measured by the bandwidth amplification factor, which is the ratio between response and request packet sizes. Since late 2013, a feature in ntpd called “monlist” has been exploited as a vector for reflection attack, with amplification factor as high as 206x.&lt;sup id=&quot;fnref:CFNTP&quot;&gt;&lt;a href=&quot;#fn:CFNTP&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;7&lt;/a&gt;&lt;/sup&gt;&lt;sup id=&quot;fnref:GHouston14&quot;&gt;&lt;a href=&quot;#fn:GHouston14&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;8&lt;/a&gt;&lt;/sup&gt; While this problematic feature has since been disabled by default in newer ntpd releases, the fundamental vulnerability of UDP to IP spoofing remains. This risk has been partially mitigated by increased adoption of network filtering practices, particularly &lt;a href=&quot;https://datatracker.ietf.org/doc/html/rfc2827&quot;&gt;BCP 38&lt;/a&gt;, which prevents source address spoofing at network boundaries.&lt;/p&gt;
+
+&lt;p&gt;Old and poorly maintained software often contains vulnerabilities that can be exploited to compromise a system. ntpd experienced such a critical vulnerability in 2014. The widespread impact of the OpenSSL &lt;a href=&quot;https://en.wikipedia.org/wiki/Heartbleed&quot;&gt;Heartbleed vulnerability&lt;/a&gt; that same year increased industry awareness about the security risks of under-maintained infrastructure software, leading to funded security audits of several critical open-source projects.&lt;/p&gt;
+
+&lt;h2 id=&quot;ecosystem-of-ntp-service&quot;&gt;Ecosystem of NTP service&lt;/h2&gt;
+
+&lt;p&gt;NTP is the standard method to obtain time over the Internet. Major operating systems ship with default NTP servers operated by their respective companies, including &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;time.windows.com&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;time.apple.com&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;time.android.com&lt;/code&gt;. National research institutes concerning time often provide a NTP server to serve the public. Several technology companies have also built and made available their own public NTP infrastructure, including Cloudflare, Facebook (currently known as Meta), Amazon, and others.&lt;/p&gt;
+
+&lt;p&gt;Individuals can also set up NTP servers themselves using various time sources: In the past there were radio clock or second-hand atomic clock. It has been easier nowadays with the wide availability of GPS/GNSS receivers, which provide nanosecond-level accuracy as long as there is a clear view of the sky. The &lt;a href=&quot;https://www.ntppool.org/en/&quot;&gt;NTP Pool Project&lt;/a&gt; serves as the major collective organization for these volunteer-operated NTP servers and is used by default in many Linux distributions. The project continuously monitors participating servers, removing those that fail to maintain sufficient time accuracy.&lt;sup id=&quot;fnref:M22&quot;&gt;&lt;a href=&quot;#fn:M22&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;9&lt;/a&gt;&lt;/sup&gt; The clients are directed to servers in the same country or region by a custom GeoDNS software.&lt;/p&gt;
+
+&lt;p&gt;However, volunteer-run services are more susceptible to attacks and more likely to cease services. The growth of participant number stalled in 2014 due to the rise of NTP-based DDoS attacks. Abuses caused poorly configured devices or software have often made it into news, a collection of those can be found &lt;a href=&quot;https://en.wikipedia.org/wiki/NTP_server_misuse_and_abuse&quot;&gt;in Wikipedia&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;While the NTP Pool Project does not publicly list participating server IP addresses on its website, researchers have compiled datasets of the network’s composition.&lt;sup id=&quot;fnref:NL22&quot;&gt;&lt;a href=&quot;#fn:NL22&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;10&lt;/a&gt;&lt;/sup&gt; Volunteers can choose which country zones to serve, and notable imbalance in server availability between countries can be observed.&lt;sup id=&quot;fnref:NL24&quot;&gt;&lt;a href=&quot;#fn:NL24&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;11&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;Besides operational challenges, the NTP Pool is largely maintained by one man Ask Bjørn Hansen, and changes happen slowly. A longstanding issue was the reliance on a single monitoring location, which sometimes incorrectly flagged servers as unreliable due to network-specific connectivity issues. A new distributed monitoring system was finally deployed in 2023.&lt;sup id=&quot;fnref:NN23&quot;&gt;&lt;a href=&quot;#fn:NN23&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;12&lt;/a&gt;&lt;/sup&gt; Another ongoing challenge is IPv6 support: currently, only &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2.pool.ntp.org&lt;/code&gt; provides AAAA records,&lt;sup id=&quot;fnref:GC&quot;&gt;&lt;a href=&quot;#fn:GC&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;13&lt;/a&gt;&lt;/sup&gt; despite &lt;a href=&quot;https://community.ntppool.org/t/the-time-has-come-we-must-enable-ipv6-entirely/1968&quot;&gt;community requests&lt;/a&gt; to enable IPv6 for all endpoints.&lt;/p&gt;
+
+&lt;p&gt;The author would like to express his condolences to the memory of Professor David L. Mills.&lt;/p&gt;
+
+&lt;style&gt;
+#markdown-content code {
+  text-decoration: underline;
+}
+/* Polyfill for Chromium. Attributes removed in MathML Core */
+.katex-mathml mtd {
+  padding: 0.25em 0;
+}
+.katex-mathml mtr {
+  margin: 0.25em 0;
+}
+.katex-mathml mtable[columnalign=&quot;right left&quot;]&gt;mtr&gt;mtd:first-child {
+  text-align: right;
+}
+.katex-mathml mtable[columnalign=&quot;right left&quot;]&gt;mtr&gt;mtd:nth-child(2) {
+  text-align: left;
+}
+&lt;/style&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:TI&quot;&gt;
+      &lt;p&gt;Garrett Yamasaki, Rob Rodrigues. &lt;a href=&quot;https://www.ti.com/document-viewer/lit/html/SSZTAU5&quot;&gt;How to Implement IEEE 1588 Time Stamping in an Ethernet Transceiver&lt;/a&gt;. SSZTAU5. Texas Instruments. 2023. &lt;a href=&quot;#fnref:TI&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:DOCSISlatency2013&quot;&gt;
+      &lt;p&gt;Greg White. &lt;a href=&quot;https://www.internetsociety.org/wp-content/uploads/2013/09/ISOC_latency_docsis.pdf&quot;&gt;Latency in DOCSIS Networks&lt;/a&gt;. CableLabs. 2013-09-26. &lt;a href=&quot;#fnref:DOCSISlatency2013&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:Mills12&quot;&gt;
+      &lt;p&gt;David L. Mills. &lt;a href=&quot;https://www.eecis.udel.edu/~mills/time.html&quot;&gt;NTP Timestamp Calculations&lt;/a&gt;. 2012-05-26. &lt;a href=&quot;#fnref:Mills12&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:N15&quot;&gt;
+      &lt;p&gt;Charles Babcock. &lt;a href=&quot;https://www.informationweek.com/it-leadership/ntp-s-fate-hinges-on-father-time-&quot;&gt;NTP’s Fate Hinges On ‘Father Time’&lt;/a&gt;. InformationWeek. 2015-03-11. &lt;a href=&quot;#fnref:N15&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:N22&quot;&gt;
+      &lt;p&gt;Nate Hopper. &lt;a href=&quot;https://www.newyorker.com/tech/annals-of-technology/the-thorny-problem-of-keeping-the-internets-time&quot;&gt;The Thorny Problem of Keeping the Internet’s Time&lt;/a&gt;. The New Yorker. 2022-09-30 &lt;a href=&quot;#fnref:N22&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:Chrony&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://chrony-project.org/comparison.html&quot;&gt;Comparison of NTP implementations&lt;/a&gt;. chrony. 2023-08-10. &lt;a href=&quot;#fnref:Chrony&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:CFNTP&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://www.cloudflare.com/learning/ddos/ntp-amplification-ddos-attack/&quot;&gt;NTP amplification DDoS attack&lt;/a&gt;. Cloudflare. &lt;a href=&quot;#fnref:CFNTP&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:GHouston14&quot;&gt;
+      &lt;p&gt;Geoff Huston, Randy Bush. &lt;a href=&quot;https://labs.apnic.net/presentations/store/2014-02-25-ntpddos.pdf&quot;&gt;NTP and Evil&lt;/a&gt;. 2014 &lt;a href=&quot;#fnref:GHouston14&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:M22&quot;&gt;
+      &lt;p&gt;Jeonggyu Song, Jonghoon Kwon, Junbeom Hur. &lt;a href=&quot;https://dl.acm.org/doi/abs/10.1145/3492866.3558586&quot;&gt;Analysis of NTP pool monitoring system based on multiple monitoring stations&lt;/a&gt;. MobiHoc ‘22. 2022. &lt;a href=&quot;#fnref:M22&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:NL22&quot;&gt;
+      &lt;p&gt;Giovane C. M. Moura, Marco Davids, Caspar Schutijser, Cristian Hesselman. &lt;a href=&quot;https://www.sidnlabs.nl/downloads/5aPx86UtFmvKs6WE3LHwbU/acfcf45571436eca4eb924f62bdddc10/Diving_into_the_NTP_Pool.pdf&quot;&gt;Diving into the NTP Pool&lt;/a&gt;. 2022-02-03. &lt;a href=&quot;#fnref:NL22&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:NL24&quot;&gt;
+      &lt;p&gt;Giovane C. M. Moura, Marco Davids, Caspar Schutijser, Cristian Hesselman, John Heidemann, and Georgios Smaragdakis. &lt;a href=&quot;https://dl.acm.org/doi/10.1145/3639041&quot;&gt;Deep Dive into NTP Pool’s Popularity and Mapping&lt;/a&gt;. POMACS. 2024. &lt;a href=&quot;#fnref:NL24&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:NN23&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://news.ntppool.org/2023/03/ntp-pool-monitoring-v2/&quot;&gt;NTP Pool Monitoring v2&lt;/a&gt;. NTP Pool News. 2023-03-20. &lt;a href=&quot;#fnref:NN23&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:GC&quot;&gt;
+      &lt;p&gt;&lt;span class=&quot;url&quot;&gt;&lt;a href=&quot;https://github.com/abh/ntppool/blob/prod-2024.10.0/lib/NP/Model/DnsRoot.pm#L182&quot;&gt;https://github.com/abh/ntppool/blob/prod-2024.10.0/lib/NP/Model/DnsRoot.pm#L182&lt;/a&gt;&lt;/span&gt; &lt;a href=&quot;#fnref:GC&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content>
+      
+
+      
+      
+      
+      
+      
+
+      <author>
+          <name></name>
+        
+        
+      </author>
+
+      
+        <category term="IT" />
+      
+
+      
+        <category term="互联网" />
+      
+
+      
+        <summary type="html">The Network Time Protocol (NTP) is one of the few protocols that have been continuously used from the early Internet to the present. An overview on its workings is presented in this report, written in late 2024.</summary>
+      
+
+      
+      
+    </entry>
+  
+    <entry>
+      
+
+      <title type="html">26岁，早已不再是学生？</title>
+      <link href="https://soaked.in/2026/06/deng/" rel="alternate" type="text/html" title="26岁，早已不再是学生？" />
+      <published>2026-06-05T17:30:00+08:00</published>
+      <updated>2026-06-05T17:30:00+08:00</updated>
+      <id>urn:uuid:b0aa3272-0098-45ac-8b93-0b11fbe77fa5</id>
+      
+      
+        <content type="html" xml:base="https://soaked.in/2026/06/deng/">&lt;p&gt;作为一个年过半半百的“老登”，我还记得&lt;a href=&quot;https://zh.wikipedia.org/wiki/Internet_Explorer_6&quot;&gt;IE6&lt;/a&gt;每次切换页面时播放的点击音效，以及访问HTTPS地址时总会弹的框，还有以单个swf文件分发的&lt;a href=&quot;https://en.wikipedia.org/wiki/Adobe_Flash&quot;&gt;Flash&lt;/a&gt;游戏和动画。日出日落、物换星移，在时间的纯白色冰面上，即使是恐龙也会被推着向前滑行。&lt;/p&gt;
+
+&lt;h2 id=&quot;一&quot;&gt;一&lt;/h2&gt;
+
+&lt;blockquote lang=&quot;en&quot;&gt;
+  &lt;p&gt;Anything that is in the world when you’re born is normal and ordinary and is just a natural part of the way the world works.&lt;/p&gt;
+
+  &lt;p&gt;Anything that’s invented between when you’re fifteen and thirty-five is new and exciting and revolutionary and you can probably get a career in it.&lt;/p&gt;
+
+  &lt;p&gt;Anything invented after you’re thirty-five is against the natural order of things.&lt;/p&gt;
+
+  &lt;p style=&quot;text-align: right&quot;&gt;by &lt;a href=&quot;https://zh.wikipedia.org/wiki/%E9%81%93%E6%A0%BC%E6%8B%89%E6%96%AF%C2%B7%E4%BA%9A%E5%BD%93%E6%96%AF&quot;&gt;Douglas Adams&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;现在我已经是比大部分大学生老的老登了。&lt;br /&gt;
+看到优秀的本科生，除了与以前一样的敬佩，还多了份意识到自己已不再有机会的自知之明，只能感慨最终仍如此一事无成。&lt;/p&gt;
+
+&lt;p&gt;从丑陋的围墙外看到了曾住过的宿舍楼，每个阳台都晾满了衣服。我也曾站在那上面，或者因没带钥匙坐在天台，看着天上的流云和夕阳洒下的金光。&lt;br /&gt;
+2017年来参观时，觉得这里是别人的青春。我与此隔着压得人喘不过气的高三一年，不敢想一年后会在哪里，更别提以后会如何。&lt;br /&gt;
+现如今，这里仍是别人的青春。中间的时间大概是借来的，并没有真正体验过便已不可逆地到期了。企图在别处留住它的尝试最终以相似但更加戏剧性的方式变成了一地鸡毛。我的事情总是这样。&lt;/p&gt;
+
+&lt;p&gt;怪不得小时候见到的许多博客后来都换用&lt;a href=&quot;https://en.wikipedia.org/wiki/Static_site_generator&quot;&gt;SSG&lt;/a&gt;生成了。不用运维真香。&lt;/p&gt;
+
+&lt;h2 id=&quot;二&quot;&gt;二&lt;/h2&gt;
+
+&lt;p&gt;高中的一个外教老师曾展示了这句话，让我们猜是什么时代写的：&lt;/p&gt;
+
+&lt;blockquote lang=&quot;en&quot;&gt;
+  &lt;p&gt;The children now love luxury. They have bad manners, contempt for authority; they show disrespect for elders and love chatter in place of exercise.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;话中的傲慢显而易见。我本以为它写于近200年（工业革命之后），听到答案是古希腊时着实有些惊讶，感慨于历史的循环。不过我原本的猜测并非全错，因为&lt;a href=&quot;https://quoteinvestigator.com/2010/05/01/misbehave/&quot;&gt;据他人考证&lt;/a&gt;，这句话实为20世纪初的人托古所作。幸好仍有其他流传至今的材料可佐证这种“一代不如一代”迷思的持久生命力。&lt;/p&gt;
+
+&lt;p&gt;这年头的AI开始指以LLM为代表的生成式人工智能了，不久之前它指的好像还是深度学习。那个产品于2022年底横空出世，于是我莫名其妙地成了最后一届不使用LLM写论文的本科毕业生。一年好像太短，来不及改变许多事；两年过去则似乎一切已变了样。&lt;/p&gt;
+
+&lt;p&gt;自2023年开始的AI和数据中心基建狂热在推高了科技公司的股价、美国的电价之后，到2025年末已经通过内存闪存涨价将代价传导到了消费者头上。
+过去虽然也存在行为糟糕的爬虫，但通常仍是以建立索引或传统的结构化采集为目的，有资源去竭泽而渔的玩家没那么多。LLM背后的各路人马则有着把世间的一切知识都炼成模型权重的野心，仗着地平线上AGI的宏伟大饼忽悠到的投资，造就了前所未有的爬虫浪潮——以前金主或者大公司应该没有这么多资源可以滥用。贪婪得丧心病狂的爬虫让&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E5%B7%A5%E4%BD%9C%E9%87%8F%E8%AD%89%E6%98%8E&quot;&gt;PoW&lt;/a&gt;在完成了从反垃圾邮件方法到加密货币共识机制基石的角色转变后，又做回了反垃圾的老本行，在浏览器验证码动画中浪费着屏幕前真人的无数时间。&lt;/p&gt;
+
+&lt;p&gt;现在的LLM仍然是信誓旦旦地胡说八道的马屁精，不过已不似刚出现时那般糟糕；若是乐于拥抱变化的熟手，大概早已能用它实现许多事了。然而由于它的马屁精性质，它仍是&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E9%84%A7%E5%AF%A7-%E5%85%8B%E9%AD%AF%E6%A0%BC%E6%95%88%E6%87%89&quot;&gt;邓宁-克鲁格效应&lt;/a&gt;的放大器。LLM大概永远不会成为真理机器。不过自工业革命以来，craftsmanship也许总在式微。哪个工程师心底里真的没有把事情做“好”的追求呢？可绝大多数人不会想当win32仙人，或是别的某种手艺人。许多事就是能用即可，为何要为自己不在乎的别人的崇高倾注心力呢。人性如此？可这是取代了写实画家的照相术，还是曾被视为奇迹的汽油添加剂&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E5%9B%9B%E4%B9%99%E5%9F%BA%E9%89%9B&quot;&gt;四乙基铅&lt;/a&gt;呢？&lt;/p&gt;
+
+&lt;p&gt;几年里一直能见到利益相关者天花乱坠的吹捧，以及美式Tech Right披着&lt;a href=&quot;https://en.wikipedia.org/wiki/Effective_accelerationism&quot;&gt;effective accelerationism&lt;/a&gt;皮的威权主义傲慢。即使其中的泡沫终将破裂，已经积累的经验和基础设施投入也将继续影响着未来。20世纪初见证了实用飞行器的发明的人们或许会欣喜于人类终于实现了飞上蓝天的梦想，不会料到不久后它们就将化为一战战场上的新型杀戮机器。世界一直在变，不会回头。&lt;/p&gt;
+
+&lt;p&gt;说回来，同龄人大都已经有几年的工作经验了，认识的高中学弟学妹有的已经当上了中小学老师。原来以前遇见的刚毕业的新老师其实心里可能是这样的，听起来就像是一场cosplay。父母在这个年纪都差不多生小孩了，我仍然浮在空中，好像仍活在过去。&lt;/p&gt;
+
+&lt;p&gt;岁月就是这么荒诞。我们每个人都在传送带的队列上，总会轮到那份社会责任。&lt;/p&gt;
+
+&lt;h2 id=&quot;三&quot;&gt;三&lt;/h2&gt;
+
+&lt;p&gt;2021年，改革开放后无数人扛起的土地财政奇迹终于熄火。&lt;br /&gt;
+2022年底，勇敢的人们举起白纸，终于终止了“核酸”下的人道主义灾难。&lt;br /&gt;
+2024年，美国人民为世界再次送来了&lt;a href=&quot;https://en.wikipedia.org/wiki/Second_presidency_of_Donald_Trump&quot;&gt;Trump II&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;我见识了&lt;a href=&quot;https://cn.nytimes.com/china/20190814/hong-kong-protests-china/&quot;&gt;放大特定侧面的谎言&lt;/a&gt;如何污染了人们的认识，也见到了许多人为&lt;a href=&quot;https://matters.town/@linsantu/%E7%81%AF%E5%A1%94%E4%B8%BB%E4%B9%89%E4%B8%8E%E4%B8%AD%E5%9B%BD%E8%87%AA%E7%94%B1%E6%B4%BE%E7%9F%A5%E8%AF%86%E5%88%86%E5%AD%90%E7%9A%84-%E5%B7%9D%E5%8C%96-bafyreiauru4fxptiyil5okvya5aeql77ty4nwzjyf37rfoltrewnccph3a&quot;&gt;反抽象的“共”&lt;/a&gt;而落入强人威权政治的粪坑。那套&lt;a href=&quot;https://en.wikipedia.org/wiki/Firehose_of_falsehood&quot;&gt;firehose of falsehood&lt;/a&gt;宣传术在当下的传媒环境仍行之有效，历史里&lt;a href=&quot;https://en.wikipedia.org/wiki/Big_lie&quot;&gt;big lie&lt;/a&gt;式的谎言正不断地重演着。&lt;/p&gt;
+
+&lt;p&gt;即便记忆里那个全球化和新自由主义高歌猛进的时代已经成了历史，一些现象似乎仍是普世且跨越时间的。世界各地的排外者好像用着神似的沙文主义话术，而这边的“信创”与美国那边打着“国家安全”旗号的科技-军工复合体也许是一丘之貉。2014年前后，曾有研究者提出名为“&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E4%BE%9D%E9%99%84%E7%9A%84%E8%87%AA%E7%94%B1&quot;&gt;依附的自由&lt;/a&gt;”（collateral freedom）的反互联网审查方法，利用大型跨国公司基础设施的缝隙提高审查者误封的代价。可是即使这种用法不会带来额外的开销，商业公司也没有动力让一般用户这样使用。面对业务地区的政府，他们便主动或被动地堵上了这条缝，例如一些&lt;a href=&quot;https://en.wikipedia.org/wiki/Domain_fronting&quot;&gt;domain fronting&lt;/a&gt;手段的消失，以及AWS将S3对象存储原来的path-style地址更换为域名的例子。就算个别决策者某个时刻做出了有骨气的决定，终究无法抵挡整个企业KPI的惯性。&lt;/p&gt;
+
+&lt;p&gt;现在距离中国大陆结束清零的&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E6%96%B0%E5%8D%81%E6%9D%A1&quot;&gt;新十条&lt;/a&gt;的时间已经比从武汉封城到乙类乙管的持续时间长了。假如某一天变革能够发生，其后的转型正义仍将是艰巨的任务。有些国家也许用了超过一代人的时间也无法获得真相与和解，反而往相反的方向滑回去。用脚投票不一定现实，我们终究要生活在这个时代里。&lt;/p&gt;
+
+&lt;p&gt;不记得从哪年开始，我开始害怕夏天——高温出现的日子越来越多，暖化的气候也已造成更极端和多变的天气现象。恐怕假以时日，人类将不得不开始进行昂贵的&lt;a href=&quot;https://en.wikipedia.org/wiki/Direct_air_capture&quot;&gt;direct air capture&lt;/a&gt;来为现在收拾残局。工业化国家的人口结构炸弹早已埋下，我们仍不知道公众预期转变后的社会将变成什么样。未来我们将见到更多的烟花，可人们总要找到出路。&lt;/p&gt;
+
+&lt;p&gt;我能够选择不犬儒，相信真相常在吗？&lt;/p&gt;
+
+&lt;p&gt;逝者如斯夫，不舍昼夜。&lt;/p&gt;</content>
+      
+
+      
+      
+      
+      
+      
+
+      <author>
+          <name></name>
+        
+        
+      </author>
+
+      
+        <category term="随笔" />
+      
+
+      
+
+      
+        <summary type="html">作为一个年过半半百的“老登”，我还记得IE6每次切换页面时播放的点击音效，以及访问HTTPS地址时总会弹的框，还有以单个swf文件分发的Flash游戏和动画。日出日落、物换星移，在时间的纯白色冰面上，即使是恐龙也会被推着向前滑行。</summary>
+      
+
+      
+      
+    </entry>
+  
+    <entry>
+      
+
+      <title type="html">微信公众号文章URL的种类与结构</title>
+      <link href="https://soaked.in/2020/08/wechat-platform-url/" rel="alternate" type="text/html" title="微信公众号文章URL的种类与结构" />
+      <published>2020-08-23T00:25:00+08:00</published>
+      <updated>2026-05-03T15:00:00+08:00</updated>
+      <id>urn:uuid:54a724c8-2666-4d30-9a09-0c4d2f1d5737</id>
+      
+      
+        <content type="html" xml:base="https://soaked.in/2020/08/wechat-platform-url/">&lt;p&gt;微信公众号是微信围墙花园的一部分。外界想访问其中内容时，往往需要面对一个很长的URL——其过分的长度与不甚清晰的含义给使用者带来了不小的困扰，有时携带的跟踪参数还会给分享者带来泄露身份的风险。本文将对微信公众号文章URL的三种类型进行简单的描述，并记录相关的发现。&lt;/p&gt;
+
+&lt;p&gt;背景部分较为琐碎，赶时间可&lt;a href=&quot;#url-formats-overview&quot;&gt;按此跳至正题&lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;background&quot;&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;微信公众平台上线于2012年8月17日，伴随着微信用户量的增长，与其余社交功能紧密整合的公众号逐渐成为不少人获取信息的主要渠道，众多新兴的“自媒体”将传统媒体打得落花流水。开设公众号成了接触国内各类受众最有效的方式之一，还在建站的恐怕只剩些老古板了。相信称微信公众号为近年中国大陆最主流的在线信息发布渠道都不为过，大量优质内容往往仅在公众号中发表。然而，微信公众号对外界极为封闭，使用正常的浏览器仅能通过文章的URL访问文章页，无法了解这个公众号的其他内容。搜狗的微信搜索是公众号内容在微信客户端外唯一公开的访问渠道，腾讯却仍设置了重重限制：可以用它查看某个公众号的简介资料，早前还会在简介页列出它最新的十篇文章，但此功能最晚在2020年初已经失效了；可以进行全局的文章搜索，但效果实在不尽人意，有时换用许多关键词也只能得到充斥着垃圾内容的结果。更糟糕的是，从这里得到的文章链接一段时间后（目前为6小时）就会&lt;a href=&quot;#sogou-temp-link&quot;&gt;过期失效&lt;/a&gt;。纵使&lt;a href=&quot;https://www.v2ex.com/t/553855?p=1&quot;&gt;不少用户&lt;/a&gt;对微信公众号有&lt;a href=&quot;https://www.v2ex.com/t/609985?p=1&quot;&gt;各种怨言&lt;/a&gt;，目前它在国内内容领域的霸主地位，似乎是不可撼动的。&lt;/p&gt;
+
+&lt;p&gt;首次接触微信公众号的时候，觉得它那时的一些特性使它有成为一个历史信息存档库的潜质：内容全都储存在腾讯自己的服务器上，服务可靠且持久，内容发布者无需承担储存过去文章的成本；文章发布后无法修改，删除重发代价较大（一般的订阅号每日只能推送一次消息），能忠实地记录文章首次发表时的模样。不过，微信平台随后进行的一些规则变动则使当时的期待有些站不住脚了。对于后一点，微信于&lt;a href=&quot;https://mp.weixin.qq.com/s/TdNOUjkWzJYVtwZ6YOUlrA&quot;&gt;2018年2月7日&lt;/a&gt;上线了修改文章错别字的功能，不过这个功能还是较为“克制”的，其允许修改的字数不多（目前为20个），作用恐怕确实如&lt;a href=&quot;https://mp.weixin.qq.com/s/19pMfMJx7uBPXP7SBrsWqA&quot;&gt;微信团队“微信派”所说&lt;/a&gt;，&lt;a href=&quot;https://36kr.com/p/1722263142401&quot;&gt;只限于修改错别字&lt;/a&gt;了。&lt;/p&gt;
+
+&lt;p&gt;20字的变动或许已经足以让作者删去文章中存在争议的句子，可好歹文章还在。但关乎文章保存时限的前一点，根据微信公告里的说法，则是应监管方的一纸文件而不再成立了：援引网信办于2017年9月7日印发的&lt;a href=&quot;http://www.cac.gov.cn/2017-09/07/c_1121624269.htm&quot;&gt;《互联网用户公众账号信息服务管理规定》&lt;/a&gt;第七条中“互联网用户公众账号信息服务提供者应当对同一主体在同一平台注册公众账号的数量合理设定上限”的规定，微信在2018年先后两次将原先企业50个、个人5个公众号的&lt;a href=&quot;https://www.ifanr.com/minapp/1128973&quot;&gt;限额缩至企业2个，个人1个&lt;/a&gt;。在首次调低开设公众号限额后，我便遇到了个人运营的公众号被迁移至新“主体”，先前内容均被删除的情况（原账号似乎是个人为了企业号的权限而向他人买来的）。此外，微信还宣布将&lt;a href=&quot;https://tech.qq.com/a/20180317/010454.htm&quot;&gt;自动注销210天内不活跃的非认证公众号&lt;/a&gt;（目前个人号与企业号均可进行“微信认证”）。对于一般的免费UGC平台，只要平台还在，用户发布的内容就能一直留在网上，即便用户已经淡出，或因疾病等不可抗力无法访问网站。说实话，他们恐怕本就没打算让微信公众平台成为一个适合长期保存内容的地方，否则它就不会是个只可用自家的搜狗来搜索、不给账号的历史文章列表提供日期选择器，仅可在微信内不断往下滑才能列出文章的围墙花园了。&lt;ins&gt;（微信2026年初在公众号搜索加入了“指定发布时间”的选项，终于能按时间筛选了。）&lt;/ins&gt;&lt;/p&gt;
+
+&lt;p&gt;话说回来，国内的地方政府与传统新闻媒体网站有一个通病：更换CMS时往往会更改URL的格式，过去保存在收藏夹里的链接一夜之间就失效了；有的可能还会顺带清理早期的内容，想要寻找的旧资料在新网站里连影子都没有。此时只能在搜索引擎里换着关键词来寻找转载与快照页，或是去 &lt;a href=&quot;https://archive.org/web/&quot;&gt;Wayback Machine&lt;/a&gt; 和 &lt;a href=&quot;https://archive.is/&quot;&gt;archive.is&lt;/a&gt; 这类存档网站来碰运气了。相比之下，那些不会被随意清理的微信公众号发布的内容则显得可靠很多。再者，目前许多机构会将微信公众号和新浪微博作为主要的公关渠道进行运营，网站往往疏于打理、更新较缓，甚至已经荒废、连域名都已被菠菜网站抢注了，使用开放互联网中的搜索引擎根本无法及时获得信息。微信，是不得不用的。&lt;/p&gt;
+
+&lt;p&gt;然而，微信公众号文章的URL始终为人诟病。在“PC时代”，再三流的CMS系统也不至于生成形如&lt;code class=&quot;language-plaintext url highlighter-rouge&quot;&gt;https://mp.weixin.qq.com/s?__biz=MjM5NjM4MDAxMg==&amp;amp;mid=2655090139&amp;amp;idx=1&amp;amp;sn=7516984a032cb031ce73577fe0ae5366&lt;/code&gt;这样令人凌乱的URL。可是，微信（以及不少现代社交网站与IM）会将用于跟踪用户的参数掺进本来足以定位一篇文章的URL里，并把这一长串吓人的东西藏在漂亮的消息气泡内，再贴上一张诱人的缩略图。在它们的围墙花园里，这些ugly detail都被掩盖在华丽的界面之下。但当用户想把文章分享到围墙花园之外，就不得不面对它们的底层实现——URL。在当前版本的微信中，选择“复制链接”会得到形如&lt;code class=&quot;language-plaintext url highlighter-rouge&quot;&gt;https://mp.weixin.qq.com/s/ruYM6tbU06iI4zfeQDTuLA&lt;/code&gt;的短链接，而如果选择“在浏览器打开”，便会在浏览器的地址栏中看到形似段首例子的长URL，并带有多项可以起跟踪作用的参数。&lt;/p&gt;
+
+&lt;p&gt;网上有一些爬取微信公众号文章的经验介绍，不过在下面的文章中，我仅将尝试介绍微信公众号文章URL的三种类型，并描述哪些参数是必须的。（其实是水平太差了，不想研究如何爬取）&lt;/p&gt;
+
+&lt;h2 id=&quot;url-formats-overview&quot;&gt;三种URL格式&lt;/h2&gt;
+
+&lt;p&gt;这里使用新华社的公众号“新华网”于北京时间2021年5月8日18:36:40发表的&lt;a href=&quot;https://mp.weixin.qq.com/s/-rwvHhqYbKGCVFeXRNknYQ&quot;&gt;《注意！疫苗接种第二针不能这样打！》&lt;/a&gt;作为例子。&lt;/p&gt;
+
+&lt;ol class=&quot;url&quot;&gt;
+  &lt;li&gt;https://mp.weixin.qq.com/s/-rwvHhqYbKGCVFeXRNknYQ&lt;/li&gt;
+  &lt;li&gt;https://mp.weixin.qq.com/s?__biz=MzA4MjQxNjQzMA==&amp;amp;mid=2768628484&amp;amp;idx=1&amp;amp;sn=93dcc54ce807f7793739ee2fd2377056&lt;/li&gt;
+  &lt;li&gt;https://mp.weixin.qq.com/s?src=11&amp;amp;timestamp=1620536401&amp;amp;ver=3057&amp;amp;signature=vCDI8FQcumnNGv4ScvFP-swQRlirdQSqTfjS8m-oFzgHMkqlNM3ljzjSevcjXLC-z-n0RzzMkNt-lwKMUaskfaqFFrpYZNq4ZCKkFFGj8L*KvH780aEUBJFvWTGmMGLC&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;为了下文叙述方便，会将以上三种URL分别称为“短链接”、“完整链接”与“搜狗临时链接”。观察上述三种URL，可以判断公众号文章链接具有的共同点是第一级路径为”s”，而其后跟随的参数则没有明确的语言含义。&lt;/p&gt;
+
+&lt;p&gt;微信公众平台使用的域名是mp.weixin.qq.com。它使用了mp这个子域名，而“微信公众平台”目前的官方英文名为”WeChat Official Accounts Platform”，即“微信官方号平台”，其中没有可以缩写出mp的单词。起初我由“公众”这个词猜测它可能指”mass platform”，不过根据下文&lt;a href=&quot;#ref-list&quot;&gt;“参见”&lt;/a&gt;中列出的一些介绍微信历史的文章，微信公众平台曾被称为“媒体平台”与“官号平台”。域名中mp这个缩写是“媒体平台”(media platform)留下的，而它目前使用的英文名则是“官号平台”留下的。&lt;/p&gt;
+
+&lt;p&gt;直接访问mp.weixin.qq.com会跳转至微信公众平台管理后台的登录页，该页面内还有一些指向微信公众平台开发文档与帮助文档的链接。&lt;/p&gt;
+
+&lt;h3 id=&quot;full-link&quot;&gt;完整链接&lt;/h3&gt;
+
+&lt;p&gt;这种链接应当是最为经典的公众号文章链接了。目前版本的微信中，浏览文章时在菜单栏內选择“在浏览器打开”，便可在浏览器的地址栏内见到此种风格的URL。这也是将文章转发给好友时，气泡类型的链接实际使用的URL种类。&lt;/p&gt;
+
+&lt;p&gt;公众号文章会设置一个全局的JavaScript变量&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;msg_link&lt;/code&gt;&lt;/strong&gt;，它的值就是完整链接格式的文章URL。这个变量可直接在文章的HTML代码中找到。（使用时需要对其进行HTML entity decode，将&amp;amp;amp;替换为&amp;amp;）&lt;/p&gt;
+
+&lt;p&gt;在Android版微信中使用“在浏览器打开”会把微信WebView内使用的URL直接传给浏览器应用，这样得到的URL会比上面例子中提到的更长，其中含有不少非必要的参数，其中部分相信可用于追溯出生成这个链接的微信用户的身份。&lt;/p&gt;
+
+&lt;!-- dl dt dd --&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;__biz&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;为business的缩写，对该公众号发布的所有文章均相同。参数值使用base64编码，解码后为一串数字，相信是公众号的ID。&lt;/dd&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mid&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;相信指”message id”，对应到公众号后台中“素材库”里的“图文消息”，它的值对于某一个公众号似乎是自增的。如果一条群发的“图文消息”内有多篇文章，那么其中各篇文章的mid值均相同。公众号支持的消息类型可参见&lt;a href=&quot;https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Batch_Sends_and_Originality_Checks.html#2&quot;&gt;微信公众平台群发接口的文档&lt;/a&gt;。&lt;/dd&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;idx&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;指”index”，值为该篇文章在某次群发中的顺序。若只发布了一篇文章，这个值就为1。&lt;/dd&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;指”signature”（下文详述），相信其格式为一个32位的16进制数（128 bits）。它应该是通过某种校验和算法生成的，而常用的128位散列算法只有MD5吧。当然，这个值是微信公众平台后端生成的，访问者只能将其原封不动地保存下来。&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;!-- dl dt dd --&gt;
+
+&lt;p&gt;大致于2016年底某时开始，新文章的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;msg_link&lt;/code&gt;变量会带上&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chksm&lt;/code&gt;&lt;/strong&gt;参数，显然指”checksum”。它的值为一个76位的16进制数（304 bits）。它可能是由多个散列值拼接而成，或是由较长的散列结果截短得到的。但实际访问时将其略去亦不会报错，且与其他几个必要的参数一样是恒定的，不知道有何作用。从链接长度方面考虑，分享链接时不妨将其略去，保留上述4个参数即可。&lt;/p&gt;
+
+&lt;p&gt;考虑到校验和常被用于确认下载到的文件内容是否与发布者的一致，我曾猜想这个值或许与修正文章错别字的功能有关，用于标记生成这个链接时文章的版本。但借用一位老友的公众号进行修改文字的实验后发现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chksm&lt;/code&gt;并未改变，因此相信可以认为chksm也是文章发布后就不再变化的。&lt;/p&gt;
+
+&lt;p&gt;关于链接中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;参数，一篇发布于2014年9月的文章&lt;a href=&quot;https://mp.weixin.qq.com/s/laVLXBVG_qNWuCdoDk8AUg&quot;&gt;《解读微信公众平台图文消息的链接组成》&lt;/a&gt;提到，早期的公众号文章链接没有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;参数。从上述的规则亦可以发现，凭&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;__biz&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mid&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;idx&lt;/code&gt;三个参数足以定位到某篇文章，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;的作用似乎有些多余。这篇文章的作者认为，这么做是为了防止未经授权的用户通过修改mid的方式查看公众号后台素材库内尚未发布的图文消息，而&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;是文章推送时生成的。记忆中在后台生成预览链接时也会得到一个此种性质的参数，不过我暂时没有条件确认。&lt;/p&gt;
+
+&lt;p&gt;值得一提的是，这篇文章提到早期&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mid&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;idx&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;三个参数分别会被叫做&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;appmsgid&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;itemidx&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sign&lt;/code&gt;，这一点亦可由其文中举出冯大晖公众号“小道消息”于2013年发布的&lt;a href=&quot;http://mp.weixin.qq.com/s?__biz=MjM5ODIyMTE0MA==&amp;amp;mid=10000382&amp;amp;idx=1&quot;&gt;《业绩考核》&lt;/a&gt;一文的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;msg_link&lt;/code&gt;得到验证：&lt;code class=&quot;language-plaintext url highlighter-rouge&quot;&gt;https://mp.weixin.qq.com/s?__biz=MjM5ODIyMTE0MA==&amp;amp;appmsgid=10000382&amp;amp;itemidx=1&lt;/code&gt;。实验确认这两种参数名可以随意替换，互为别名。这些早期的文章仅需要前三个参数即可访问，不需要也没有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;如果某个公众号进行了保留原始内容的“主体迁移”，迁移后的文章的这四个参数均会改变。&lt;/p&gt;
+
+&lt;h2 id=&quot;short-link&quot;&gt;短链接&lt;/h2&gt;
+
+&lt;p&gt;对于用户来说，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;的加入并不能带来什么好处，反倒拉长了URL，使体验恶化。这个改动保持了原有的链接结构，但着实给用户带来了一些麻烦。&lt;/p&gt;
+
+&lt;p&gt;根据一些 &lt;a href=&quot;http://wpweixin.com/post/17424/&quot;&gt;报&lt;/a&gt; &lt;a href=&quot;https://news.mydrivers.com/1/509/509217.htm&quot;&gt;道&lt;/a&gt; ，微信大致于2016年11月中旬启用了一种短链接——其实并不短，但相比于完整链接的长度，确实短不少。链接的值应使用base64url编码，其&lt;strong&gt;长度恒定为22个字符&lt;/strong&gt;（132 bits，不妨视为对128位数据进行base64并省略padding的结果）。其中不带有可用与追踪用户身份的参数。&lt;/p&gt;
+
+&lt;p&gt;不过，要想获得这种链接，只能使用微信客户端（手机和电脑版）内的“复制链接”功能，HTML中并无这种链接的痕迹。此外，“复制链接”不由WebView层实现，研究这种短链接的生成方式需要对native代码进行逆向工程。由于信息量与&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;相近，个人怀疑它是对&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;进行某种编码得到的，但这仅是猜想，没有依据。&lt;/p&gt;
+
+&lt;p&gt;对于早期那些没有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;的文章，“复制链接”的行为与在微信中直接点击文字链接打开的中“复制链接”似乎相同，无法得到这种短链接。但那些早期文章的链接本来就不算太长，无伤大雅。&lt;/p&gt;
+
+&lt;p&gt;考虑到可以由短链接得到完整链接（通过&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;msg_link&lt;/code&gt;），且短链接在长度上显著较短，更符合一般用户对链接格式的认识（有人认为带有query string的URL较为不美观），我认为在分享微信公众号文章时应当尽量使用“复制链接”得到的这种短链接。&lt;/p&gt;
+
+&lt;p&gt;从2023年某个时候（不晚于9月）开始，有些短链接会带上&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;poc_token&lt;/code&gt;&lt;/strong&gt;参数。它的值同样采用base64url编码，长度为40个字符（240 bits），首字符似乎总是&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;H&lt;/code&gt;。该参数实际上是与“环境异常”验证码（&lt;code class=&quot;language-plaintext url highlighter-rouge&quot;&gt;https://mp.weixin.qq.com/mp/wappoc_appmsgcaptcha&lt;/code&gt;）关联的标识，因此分享时显然可以直接略去。可以想象到此类链接被记录下来的过程：1）在浏览器访问从微信复制的原始短链接；2）完成验证码后被跳转到文章；3）从浏览器地址栏复制带有此参数的链接。使用前一节的完整链接也可能跳转至验证码入口，但下文的搜狗临时链接则似乎未见此种现象。&lt;/p&gt;
+
+&lt;h2 id=&quot;sogou-temp-link&quot;&gt;搜狗临时链接&lt;/h2&gt;
+
+&lt;p&gt;这种链接可谓是臭名昭著了。搜狗是腾讯自家的玩意儿，只有搜狗能索引微信里的文章。用户找到了搜狗的微信搜索，偶尔还得输好几个验证码，终于读到几篇文章，它们可能会被存进收藏夹或者发到其他地方。六小时后，这些好端端的页面突然就“链接过期”了。将这些链接复制到微信内打开，便能跳转到正常的文章页面。如果时间再长一点（50天），链接便会彻底失效。此时提示会变为“参数错误”，即使用微信打开也无法补救。&lt;/p&gt;
+
+&lt;!-- dl dt dd --&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;src&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;显然指”source”。目前发现的值有3和11两种，含义未知。&lt;/dd&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;timestamp&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;生成这个链接时的UNIX Timestamp，在服务器返回查询结果时便已确定，即按下搜索键或翻页的时刻。&lt;/dd&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ver&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;显然指”version”。可能是生成下面&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;使用的算法版本，每个数字会使用一段时间，可能不超过一天。&lt;/dd&gt;
+  &lt;dt&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;signature&lt;/code&gt;&lt;/dt&gt;
+  &lt;dd&gt;某种签名。长度恒定为128个字符（768 bits），特点是带有星号，应当是将标准base64字母表中的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;+&lt;/code&gt;与&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/&lt;/code&gt;替换为&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-&lt;/code&gt;及&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt;的结果。&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;!-- dl dt dd --&gt;
+
+&lt;p&gt;搜狗临时链接的&lt;a href=&quot;https://chenoge.github.io/2018/10/10/%E5%BE%AE%E4%BF%A1%E9%97%AE%E9%A2%98%E4%B8%93%E9%A2%98/&quot;&gt;6小时/50日有效期&lt;/a&gt;应可认为从&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;timestamp&lt;/code&gt;的时间开始计起。&lt;/p&gt;
+
+&lt;p&gt;曾经这些页面里也有&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;msg_link&lt;/code&gt;，可以在它还没过期时&lt;a href=&quot;https://www.zhihu.com/question/26084813/answer/101302798&quot;&gt;通过这个变量得到文章的正常URL&lt;/a&gt;。然而，微信在2016年底某时将这个变量的值以及其他提到&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sn&lt;/code&gt;的地方都抹掉了。&lt;/p&gt;
+
+&lt;p&gt;他们这么做的主要目的或许是“反爬”。但这种行为实在恶心用户，把用户产生的内容当作是自家的宝贝，捂在怀里，生怕见光。&lt;/p&gt;
+
+&lt;h2 id=&quot;ref-list&quot;&gt;参见&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;爱范儿 &lt;a href=&quot;https://www.ifanr.com/1039481&quot;&gt;不一样的微信发展简史（2011-2018）&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;南华早报 &lt;a href=&quot;https://www.scmp.com/tech/article/2159831/how-wechat-became-chinas-everyday-mobile-app&quot;&gt;How WeChat became China’s everyday mobile app&lt;/a&gt;&lt;br /&gt;
+（阮一峰&lt;a href=&quot;http://www.ruanyifeng.com/blog/2018/08/weixin.html&quot;&gt;微信的历史&lt;/a&gt;一文对其进行了概括）&lt;/li&gt;
+  &lt;li&gt;蚂蚁蚂蚁 &lt;a href=&quot;http://www.woshipm.com/pd/224359.html&quot;&gt;微信是怎样炼成的—微信产品的发展历程&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;newhappy2008 &lt;a href=&quot;https://blog.csdn.net/newhappy2008/article/details/53489239&quot;&gt;微信公众平台的发展历史&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;style&gt;
+  #markdown-content dt {
+    display: inline;
+    font-weight: bold;
+  }
+  #markdown-content dt::after {
+    content: &quot;:&quot;;
+  }
+  #markdown-content dd {
+    display: inline;
+    margin: 0;
+  }
+  #markdown-content dd::after {
+    display: block;
+    content: &quot;&quot;;
+    margin-top: 0.25em;
+  }
+  #markdown-content ol.url {
+    padding: 0;
+    border: 1px grey;
+    border-style: solid none;
+    line-height: 1.2;
+  }
+  #markdown-content .url&gt;li {
+    display: block;
+    font-family: monospace;
+    padding: 0.3em 0;
+  }
+  #markdown-content .url&gt;li+li {
+    border-top: 1px grey solid;
+  }
+&lt;/style&gt;</content>
+      
+
+      
+      
+      
+      
+      
+
+      <author>
+          <name></name>
+        
+        
+      </author>
+
+      
+        <category term="IT" />
+      
+
+      
+        <category term="互联网" />
+      
+        <category term="微信" />
+      
+
+      
+        <summary type="html">微信公众号是微信围墙花园的一部分。外界想访问其中内容时，往往需要面对一个很长的URL——其过分的长度与不甚清晰的含义给使用者带来了不小的困扰，有时携带的跟踪参数还会给分享者带来泄露身份的风险。本文将对微信公众号文章URL的三种类型进行简单的描述，并记录相关的发现。</summary>
+      
+
+      
+      
+    </entry>
+  
+    <entry>
+      
+
+      <title type="html">Hello, World!</title>
+      <link href="https://soaked.in/2020/08/hello-world/" rel="alternate" type="text/html" title="Hello, World!" />
+      <published>2020-08-09T18:00:00+08:00</published>
+      <updated>2020-08-09T18:00:00+08:00</updated>
+      <id>urn:uuid:f36cc96e-2bf1-4ec2-9c93-f57fd46f1546</id>
+      
+      
+        <content type="html" xml:base="https://soaked.in/2020/08/hello-world/">&lt;p&gt;在网上冲浪了好多年，遇到过许多有趣的博客，也在阅读器里订阅了一些，但一直没能下定决心为自己搭建一个。正在发生的 COVID-19 疫情打乱了习以为常的生活节奏，面对突如其来的空闲时间，继续拖延便说不过去了。期待能在这里留下自己的思考与发现，并记录一些经历吧。&lt;/p&gt;
+
+&lt;p&gt;小时候觉得搭个 Blog 是件很酷的事。在那个诺基亚正如日中天的时代，如今的这些互联网巨头还远没现在这么一手遮天，Google 还算是个朝气蓬勃的 startup，电脑是正常人访问互联网的唯一选择——毕竟许多手机上的浏览器连 HTML 都显示不了，只支持 &lt;a href=&quot;https://en.wikipedia.org/wiki/Wireless_Application_Protocol&quot;&gt;WAP&lt;/a&gt;。当时 3g.qq.com 提供了一个 WAP 上的 QQ，只能文字聊天，十分清爽。只是，靠那样简单的协议无法实现 push，用户想获取新消息还得自己按页面上的一个链接来刷新。&lt;/p&gt;
+
+&lt;p&gt;扯远了。建立一个博客并不难，先不说国内曾繁荣一时的诸多博客托管商提供的便捷服务，想要自行搭建博客亦有一些免费的途径：跟着教程，在网上找到能放 PHP 的免费空间，用 FileZilla 把汉化好的 WordPress 拖进 FTP 空间，把空间提供的 MySQL 配置粘贴进配置向导，“Hello world! - Just another WordPress site”就上线了。然而，免费空间不仅有各种限制还用不久。当时中文互联网上流行用 micolog&lt;sup id=&quot;fnref:micolog&quot;&gt;&lt;a href=&quot;#fn:micolog&quot; class=&quot;footnote&quot; rel=&quot;footnote&quot; role=&quot;doc-noteref&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;，背靠 Google 家的新鲜玩意儿 GAE，似乎比一般的免费空间可靠多了，于是我也没有免俗，装 Python、找主题……让博客上线并不难，可然后呢？&lt;/p&gt;
+
+&lt;p&gt;作为一个从小就语言贫乏、不爱读文学作品、肚子里没有半滴墨水的粗人，那时只能写出些自己都“不忍卒读”的流水账——涉世未深、“少年不识愁滋味”嘛。再者，常说半瓶子醋摇得响，可要是瓶子里只有浅浅的一薄层醋，那再使劲摇也晃不出什么动静来。无奈，只能将这事搁置了。&lt;/p&gt;
+
+&lt;p&gt;那样的日子过去了很久吗？我这辈子都才过了两个十年，一个十年应该算很长吧。可在此回首，又好像转瞬即逝。在国内，&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E8%B0%B7%E6%AD%8C%E9%80%80%E5%87%BA%E4%B8%AD%E5%9B%BD%E5%A4%A7%E9%99%86%E4%BA%8B%E4%BB%B6&quot;&gt;谷歌退出中国&lt;/a&gt;，微博等社交媒体进入主流，智能手机的浪潮击溃了传统功能机大厂和山寨机，并飞入寻常百姓家，移动设备流量早已超过桌面设备许久；自2015年起微信、支付宝渐渐成了生活必需品，到如今国内疫情缓解之际，已借各地强推&lt;a href=&quot;https://zh.wikipedia.org/wiki/%E5%81%A5%E5%BA%B7%E7%A0%81&quot;&gt;健康码&lt;/a&gt;的政策覆盖了绝大多数的城镇居民。简体中文互联网也慢慢地变成一个充斥着 &lt;a href=&quot;https://www.v2ex.com/t/649011?p=1#r_8638165&quot;&gt;内&lt;/a&gt; &lt;a href=&quot;https://www.v2ex.com/t/666991?p=1#r_8896397&quot;&gt;容&lt;/a&gt; &lt;a href=&quot;https://tsb2blog.com/google-chinese-results-blocklist&quot;&gt;农场&lt;/a&gt; 、&lt;a href=&quot;https://matters.news/@yama/%E5%B0%8F%E7%B2%89%E7%B4%85vs%E6%B3%B0%E5%9C%8B%E7%B6%B2%E5%8F%8B-%E5%AE%8C%E6%95%97%E8%83%8C%E5%BE%8C%E7%9A%84%E9%82%8F%E8%BC%AF-bafyreie7bkdstnvxh7lvozkqe7eckmbl3wms4uykwcthqomo2qfmuvw3bm&quot;&gt;文&lt;/a&gt; &lt;a href=&quot;https://theinitium.com/article/20190829-opinion-what-makes-pink-totalitarianism-possible/&quot;&gt;革&lt;/a&gt; &lt;a href=&quot;https://theinitium.com/article/20200515-opinion-fangfang-people-war-national-socialism/&quot;&gt;语&lt;/a&gt; &lt;a href=&quot;https://matters.news/@disincurable/%E5%B1%81%E8%82%A1-%E8%AE%A4%E7%88%B9%E5%92%8C%E6%8D%B6%E6%AD%BB-%E4%B8%BE%E6%8A%A5%E8%80%85%E7%9A%84%E4%B8%96%E7%95%8C%E8%A7%82-bafyreicjuipukjwzusia7mgyzuiddx2ht4sadsklu2hmky5xzjq3emvpve&quot;&gt;言&lt;/a&gt; 和 &lt;a href=&quot;https://matters.news/@disincurable/%E7%99%BD%E5%B7%A6-%E6%B1%A1%E5%90%8D%E5%8C%96%E4%B8%8E%E7%A4%BE%E4%BC%9A%E8%BE%BE%E5%B0%94%E6%96%87%E4%B8%BB%E4%B9%89-bafyreib7ckuzofszmjzheftb7wmkmai2wb4xjzzqwvxjrw5el5gsmskj4i&quot;&gt;仇&lt;/a&gt; &lt;a href=&quot;https://theinitium.com/article/20200301-internet-observation-foreign-permanent-residence/&quot;&gt;恨&lt;/a&gt; &lt;a href=&quot;https://theinitium.com/article/20200420-mainland-coronavirus-african-guangzhou/&quot;&gt;言论&lt;/a&gt; 的 &lt;a href=&quot;https://theinitium.com/article/20180910-mainland-censorship-journalist-in-china/&quot;&gt;毒&lt;/a&gt; &lt;a href=&quot;https://matters.news/@philosophia/%E5%AF%B9%E6%9C%AC%E6%AC%A1%E7%96%AB%E6%83%85%E7%9A%84%E7%BB%93%E6%9E%84%E6%80%A7%E5%8F%8D%E6%80%9D-%E8%B0%A3%E8%A8%80-%E5%AE%98%E5%83%9A%E5%92%8C%E5%9B%BD%E5%AE%B6%E4%B8%BB%E4%B9%89-%E4%B8%8A-zdpuAzU8UUWBV3sB7c9h6FVbGZSrsc9L9qUEdHBBpDRJzTHzu&quot;&gt;性&lt;/a&gt; &lt;a href=&quot;https://matters.news/@DunesWorkshop/%E4%B8%AD%E6%96%87%E4%BA%92%E8%81%94%E7%BD%91%E4%B8%AD-%E8%AE%A8%E8%AE%BA-%E7%9A%84%E6%B6%88%E4%BA%A1-bafyreibmdo43v35az6rspj7ghypebxghoahcqg2crjxf4naditmfok5wzy&quot;&gt;荒&lt;/a&gt; &lt;a href=&quot;https://matters.news/@juniperdeee/%E5%86%99%E7%BB%99%E7%BB%88%E5%B0%86%E9%80%9D%E5%8E%BB%E7%9A%84%E8%B1%86%E7%93%A3%E5%92%8C%E6%9B%BE%E7%BB%8F%E7%9A%84%E6%88%91%E4%BB%AC-bafyreibetv5nfimk2kifkz6pabuv2hriw7zy76nqbb4ljtmh54qzcw5vka&quot;&gt;漠&lt;/a&gt; ，许多内容仅存在于微信公众平台这个只允许自家的搜狗索引的 &lt;a href=&quot;https://zh.wikipedia.org/wiki/%E5%B0%81%E9%96%89%E5%B9%B3%E8%87%BA&quot;&gt;围墙&lt;s&gt;花园&lt;/s&gt;&lt;/a&gt; &lt;a href=&quot;https://matters.news/@disincurable/%E8%87%AA%E5%AA%92%E4%BD%93%E7%95%8C%E7%9A%84%E6%80%AA%E8%83%8E%E6%98%AF%E8%A2%AB%E6%B8%B8%E6%88%8F%E8%A7%84%E5%88%99%E5%82%AC%E7%94%9F%E7%9A%84-%E6%98%AF%E6%97%B6%E5%80%99%E6%94%B9%E6%94%B9%E5%AE%83%E4%BA%86-bafyreifckcbis24jqthtjxq7b52h7s2os5oszlkrhb4pdrzl3i53avdgma&quot;&gt;dystopia&lt;/a&gt; 里，连一些政府服务都只在微信中提供。这个顶着绿色图标、异常臃肿却连聊天功能都做得为人诟病的手机通讯应用，竟俨然已成为中国大陆互联网的“操作系统”。且不论它对言论的&lt;a href=&quot;https://en.wikipedia.org/wiki/WeChat#State_surveillance_and_intelligence_gathering&quot;&gt;监视和审查&lt;/a&gt;，其对国内“微信”与海外”WeChat”用户在&lt;a href=&quot;https://nova.moe/some-finding-on-wechat-privacy-policy/&quot;&gt;隐私政策上的差异&lt;/a&gt;便足以令人侧目。十几年间，沧海桑田。&lt;/p&gt;
+
+&lt;p&gt;写上面这段话时觉得，自己的口吻仿佛是个顽固不化的遗老，在怀念过去那个“黄金时代”中一些早已消失在时间的河里的东西。然而，那个时代其实只是童年的一个背景罢了，自己那时根本没有关注过任何公共讨论，也没收集整理过什么信息。就凭些零散模糊的回忆，哪称得上经历了一个时代呢。那个博客的黄金年代想必一去不复返了，但在互联网上拥有一小片能发发牢骚的地方这个想法，倒是一直没有忘记。做这个博客，也算了却了童年一个未尽的愿望了。&lt;/p&gt;
+
+&lt;p&gt;慢慢地，有些想写的东西了，可随着学业压力的增长，空闲的时间却少多了。现在的我和过去相比，有了哪些变化呢？“尝尽愁滋味”这种话当然是不配讲的，可这么些年里，好歹也尝过了一些，又正挣扎于不少，还清楚前面仍有一片接一片的苦海在等着我。这时候，写点东西的储备还是有的。再没个地方能把脑子里的浆糊倒出来，万一以后掉进海里没爬出来，或者走在路上被车撞了，那白在这世上转了一圈什么痕迹也没留下来，可就太亏了。然而，曾经那个不折腾活不下去的少年已经长成了一条懒癌晚期的大咸鱼，糟糕的时间管理使它在摸鱼时谋划了很久的博客一直停留在嘴上，连一张设计稿都没有。不过，2020年 &lt;a href=&quot;https://zh.wikipedia.org/wiki/2019%E5%86%A0%E7%8A%B6%E7%97%85%E6%AF%92%E7%97%85%E7%96%AB%E6%83%85&quot;&gt;COVID-19 疫情&lt;/a&gt;的乌云给了它一个免受学校琐事折磨的机会，最终一天打鱼五天晒网地糊出了这个网站。&lt;/p&gt;
+
+&lt;p&gt;博客现在托管在 GitHub Pages 上，使用 Jekyll 生成。考虑到 GitHub 使用的 Fastly CDN 目前对中国电信用户的连接质量时不时和断线无异，便加上了 Cloudflare。GitHub 被 Microsoft 收购之后运作得似乎不错，再考虑到隔壁 SourceForge 都提供了这么多年的免费 PHP 空间，GitHub Pages 这个静态页面托管服务相信在可预见的时间内是比较稳定的。这样的话，就算存在 &lt;a href=&quot;https://en.wikipedia.org/wiki/Bus_factor&quot;&gt;bus factor&lt;/a&gt; 等不可抗力，这里的内容也应该能在互联网上多存在一段时间，不会因为服务没人续费就消失在历史的河里。这算是使用免费平台的一个优势吧。若有需要，迁移到 Netlify 等托管平台或 self-host 也不难。&lt;/p&gt;
+
+&lt;p&gt;这个博客总算上线了。希望多年后翻阅这里的文章时，能庆幸过去的自己留下了一些不错的脚印。但愿这里不会很快就长草了😂&lt;/p&gt;
+
+&lt;p&gt;路漫漫其修远兮，吾将上下而求索。&lt;/p&gt;
+
+&lt;p&gt;（初稿于2019年9月7日夜）&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:micolog&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://code.google.com/archive/p/micolog/&quot;&gt;micolog&lt;/a&gt; 是一个模仿 WordPress，在 Google App Engine 上运行的 Django 程序。后来随着 GAE 被墙、GAE 降低免费额度使未配置缓存的 micolog 站点动不动就因超额被暂停、博客在社交网站兴起后式微、项目使用老旧的 Django 0.96 / Python 2.5 等原因慢慢销声匿迹了。 &lt;a href=&quot;#fnref:micolog&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content>
+      
+
+      
+      
+      
+      
+      
+
+      <author>
+          <name></name>
+        
+        
+      </author>
+
+      
+        <category term="随笔" />
+      
+
+      
+
+      
+        <summary type="html">在网上冲浪了好多年，遇到过许多有趣的博客，也在阅读器里订阅了一些，但一直没能下定决心为自己搭建一个。正在发生的 COVID-19 疫情打乱了习以为常的生活节奏，面对突如其来的空闲时间，继续拖延便说不过去了。期待能在这里留下自己的思考与发现，并记录一些经历吧。</summary>
+      
+
+      
+      
+    </entry>
+  
+</feed>

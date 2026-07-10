@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview of NTP | 咸湖的盐鱼</title>
+  <meta name="description" content="The Network Time Protocol (NTP) is one of the few protocols that have been continuously used from the early Internet to the present. An overview on its workings is presented in this report, written in late 2024." property="og:description">
+<meta property="og:title" content="Overview of NTP">
+<meta property="og:url" content="https://soaked.in/2026/07/ntp/">
+<link rel="canonical" href="https://soaked.in/2026/07/ntp/">
+<meta property="og:site_name" content="咸湖的盐鱼">
+
+<meta property="og:type" content="article">
+
+
+
+
+  <link rel="stylesheet" href="/assets/style.css">
+
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16.png">
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/assets/icons/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/favicon-180.png">
+  
+
+  <link rel="alternate" type="application/atom+xml" title="咸湖的盐鱼" href="https://soaked.in/feed.xml">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XFT5QY4HDW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XFT5QY4HDW');
+</script>
+
+</head>
+
+<body class="site-container">
+<header class="site-header-wrapper">
+<div id="site-header" class="content-container">
+  <div class="site-title-container">
+    <h1 id="site-title"><a href="/">咸湖的盐鱼</a></h1>
+    <div id="site-tagline">Soaked in brackish brine.</div>
+  </div>
+  
+  <nav id="header-menu"><ul class="horizontal-list">
+    <li><a href="/archive/">归档</a></li>
+    <li><a href="/about/">关于</a></li>
+  </ul></nav>
+</div>
+</header>
+<div class="main-container content-container">
+<main id="main-content">
+  
+<div id="page-container">
+<article>
+  <header class="page-intro">
+    <h1 id="page-title">Overview of NTP</h1>
+    
+    <div class="entry-meta">
+    <ul class="horizontal-list">
+  
+    <li><svg class="icon" viewBox="0 0 448 512"><title>发布日期</title><use xlink:href="/assets/icons/sprites.svg#calendar"></use></svg><a class="meta-content" href="/2026/07/ntp/" tabindex="-1"><time datetime="2026-07-10T23:00:00+08:00" title="2026-07-10 23:00">2026-07-10</time></a></li>
+  
+  
+    <li><svg class="icon" viewBox="0 0 576 512"><title>分类</title><use xlink:href="/assets/icons/sprites.svg#folder"></use></svg><span class="meta-content"><a href="/category/it/">IT</a></span></li>
+  
+  
+  
+    <li><svg class="icon" viewBox="0 0 640 512"><title>标签</title><use xlink:href="/assets/icons/sprites.svg#tags"></use></svg><span class="meta-content"><a href="/tag/互联网/">互联网</a></span></li>
+  
+  
+</ul>
+
+    </div>
+  </header>
+  <div id="markdown-content">
+  <p><small>This was originally a course report written on 2024-12-09. It has been edited for publishing online.</small></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Network_Time_Protocol">Network Time Protocol</a> (NTP) is one of the few protocols that have been continuously used from the early Internet to the present. Its current version is NTPv4, standardized through IETF as <a href="https://datatracker.ietf.org/doc/html/rfc5905">RFC 5905</a> in 2010. It is a client/server protocol. The server listens at UDP port 123. The protocol was designed by Professor <a href="https://en.wikipedia.org/wiki/David_L._Mills">David L. Mills</a> (Dave Mills thereafter) in the 1980s.</p>
+
+<p>NTP solves the basic issue of accurately distributing time over the Internet. It is generally said to provide millisecond-level accuracy over the Internet. For applications needing higher accuracy, <a href="https://en.wikipedia.org/wiki/Precision_Time_Protocol">Precision Time Protocol</a> (PTP) would fulfill the need. However, PTP would need timestamping support in NIC hardware to work well, switches along the way should also support PTP to account for delay in forwarding.<sup id="fnref:TI"><a href="#fn:TI" class="footnote" rel="footnote" role="doc-noteref">1</a></sup> PTP is not designed to work on public Internet.</p>
+
+<h2 id="basic-operation-of-ntp">Basic operation of NTP</h2>
+
+<p>The task of NTP is to synchronize the time on a local computer with a time server over the Internet. The process NTP uses is described in Section 8 of RFC 5905, which is remarkably simple (only one round trip is needed):</p>
+
+<p>The client initiates the process by first sending a packet containing its local timestamp (<span class="math">t<sub>1</sub></span>). The server records the moment it receives the packet (<span class="math">t<sub>2</sub></span>), and later responds by sending a packet containing <span class="math">t<sub>1</sub>, t<sub>2</sub></span> as well as the transmission time (<span class="math">t<sub>3</sub></span>). Next the client will receive the packet with <span class="math">t<sub>1</sub>, t<sub>2</sub></span> and <span class="math">t<sub>3</sub></span> at timestamp <span class="math">t<sub>4</sub></span>.</p>
+
+<p>Denote the advance of time the server to the client as <span class="math">θ</span>, the round-trip delay as <span class="math">δ</span>. Consider the relationship between timestamps for the two packets, assuming the link is symmetrical (one-way delay is <span class="math">δ/2</span>):</p>
+
+<div class="math">
+<span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.2500em" columnalign="right left" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><msub><mi>t</mi><mn>2</mn></msub></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><msub><mi>t</mi><mn>1</mn></msub><mo>+</mo><mi>θ</mi><mo>+</mo><mi>δ</mi><mi mathvariant="normal">/</mi><mn>2</mn></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><msub><mi>t</mi><mn>3</mn></msub></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><msub><mi>t</mi><mn>4</mn></msub><mo>+</mo><mi>θ</mi><mo>−</mo><mi>δ</mi><mi mathvariant="normal">/</mi><mn>2</mn></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned}
+t_2 &amp;= t_1 + \theta + \delta/2 \\
+t_3 &amp;= t_4 + \theta - \delta/2
+\end{aligned}
+</annotation></semantics></math></span>
+
+<span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.2500em" columnalign="right left" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mi>θ</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence="true">(</mo><mrow><mo fence="true">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo>−</mo><msub><mi>t</mi><mn>1</mn></msub><mo fence="true">)</mo></mrow><mo>+</mo><mrow><mo fence="true">(</mo><msub><mi>t</mi><mn>3</mn></msub><mo>−</mo><msub><mi>t</mi><mn>4</mn></msub><mo fence="true">)</mo></mrow><mo fence="true">)</mo></mrow></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mi>δ</mi></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mo>=</mo><mo stretchy="false">(</mo><msub><mi>t</mi><mn>4</mn></msub><mo>−</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>−</mo><mo stretchy="false">(</mo><msub><mi>t</mi><mn>3</mn></msub><mo>−</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned}
+\theta &amp;= \frac{1}{2}\left(\left( t_2 - t_1 \right) + \left( t_3 - t_4 \right)\right) \\
+\delta &amp;= (t_4 - t_1) - (t_3 - t_2)
+\end{aligned}
+</annotation></semantics></math></span>
+</div>
+
+<p>From the equation, it can be seen that the round-trip time (RTT) is objectively calculated without assumptions about the link. However, the symmetry assumption might not hold on the public Internet, degrading the accuracy of time offset estimation. This can result from asymmetrical routing paths, where the outgoing and incoming packets travel through different physical links due to routing policies. It’s also quite common for residential access networks to have asymmetrical latency between uplink and downlink due to queuing delay caused by their use of shared media. A notable example is <a href="https://en.wikipedia.org/wiki/DOCSIS">DOCSIS</a> (using coaxial TV cable), which employs TDMA in the uplink. Uplink transmission opportunities must be requested and granted every few milliseconds, leading to 4-8ms extra delay compared to the broadcast-style downlink.<sup id="fnref:DOCSISlatency2013"><a href="#fn:DOCSISlatency2013" class="footnote" rel="footnote" role="doc-noteref">2</a></sup> The asymmetrical transmission delay caused by slower uplink speed in <a href="https://en.wikipedia.org/wiki/ADSL">ADSL</a> is another example.</p>
+
+<p>Another interesting feature of NTP is its timestamp format. Instead of the ubiquitous <a href="https://en.wikipedia.org/wiki/Unix_time">UNIX timestamp</a> one might expect in Internet protocols, NTP uses its custom timestamp format to represent a time in UTC. The format transmitted over the wire is the 64-bit timestamp format, consisting of a 32-bit unsigned integer for seconds since the NTP epoch, followed by a 32-bit fixed-point fraction representing parts of a second. <span class="math">2<sup>32</sup> - 1</span> seconds is around 136 years, which becomes the length of an NTP era. We are currently in era 0, whose epoch is set to 1900-01-01 00:00:00 and will end on 2036-02-07. The era is not indicated in the wire format, therefore could cause <a href="https://en.wikipedia.org/wiki/Time_formatting_and_storage_bugs">overflow issues</a> similar to the <a href="https://en.wikipedia.org/wiki/Year_2000_problem">Y2K</a>, <a href="https://en.wikipedia.org/wiki/Year_2038_problem">2038</a>, or <a href="https://en.wikipedia.org/wiki/GPS_week_number_rollover">GPS rollover</a> problems, if not properly handled. The overflow issue is implicitly addressed through the time difference calculation algorithm, under the condition that the time on the client is within ±68 years of the server time.<sup id="fnref:Mills12"><a href="#fn:Mills12" class="footnote" rel="footnote" role="doc-noteref">3</a></sup></p>
+
+<h2 id="hierarchy-of-ntp-service">Hierarchy of NTP service</h2>
+
+<p>The hierarchy of NTP is envisioned to be a tree-like structure, similar to that of <a href="https://en.wikipedia.org/wiki/Domain_Name_System">DNS</a>. The hierarchy level, called stratum, indicates a device’s distance from an authoritative time source. Atomic clocks and GPS/GNSS receivers serve as authoritative time sources (stratum-0), though they are not part of the NTP network itself. NTP servers directly connected to these sources are stratum-1 servers. Machines synchronizing directly with stratum-1 servers become stratum-2, and so on. Each synchronization level introduces additional timing uncertainty, so servers at stratum-2 and above are called secondary NTP servers. The NTP protocol specifies stratum 16 as MAXSTRAT, indicating an unsynchronized state. The stratum is an 8-bit integer in the wire format. This hierarchical structure enables the NTP service to scale (not putting all the load on primary NTP servers), while maintaining the confidence in accuracy.</p>
+
+<p>The wire format contains a 32-bit field for “Reference ID”, which describes the kind of time reference used for a server. Primary NTP servers (stratum-1) set this field to the name (in ASCII) of time source, which is usually GPS/GNSS, but could be some radio clock signal in earlier times, or an atomic clock if it’s available for the owner of the server. For secondary servers, this field is customarily set to the IPv4 address of the server it is synchronized to. This is used to prevent timing loops within the same stratum. It can also provide traceability for the time results. Since IPv6 addresses are 128 bits and cannot fit in this field, NTPv4 specifies using a truncated MD5 hash of the IPv6 address instead.</p>
+
+<h2 id="implementations-of-ntp">Implementations of NTP</h2>
+
+<p>The reference implementation of NTP is the <a href="https://www.eecis.udel.edu/~mills/ntp/html/index.html">ntpd</a>, originally written by Dave Mills. Since network jitter on the Internet is a random process, accurate synchronization requires continuous measurements rather than single updates. The NTP specification extensively details both the server selection algorithm for identifying reliable time sources and the filtering algorithm for tracking time accurately. ntpd can estimate and compensate for the local computer’s clock frequency error in software. By default, it operates in slew mode, gradually adjusting the system time to avoid sudden changes that could disrupt running applications.</p>
+
+<p>As Dave Mills’ health declined, the development of ntpd transferred to his long-time collaborator Harlan Stenn in the 2000s. Stenn was the sole developer of ntpd for some years.<sup id="fnref:N15"><a href="#fn:N15" class="footnote" rel="footnote" role="doc-noteref">4</a></sup><sup id="fnref:N22"><a href="#fn:N22" class="footnote" rel="footnote" role="doc-noteref">5</a></sup> ntpd suffers from the same viability issue as other classical open source software projects like openssl: While being an important piece of software infrastructure, it is overlooked and lacks a business model. The age of the software also deters newcomers from participation. Stenn has since found the <a href="https://www.nwtime.org">Network Time Foundation</a> to support the development of ntpd. Compared to the last time I checked back in early 2023, the development still happens in a <a href="https://en.wikipedia.org/wiki/BitKeeper">BitKeeper</a> repository, but a GitHub mirror <a href="https://github.com/ntp-project/ntp/issues/1">appears to have</a> been set up. However, the project still faces infrastructure maintenance challenges, as evidenced by persistent 502 errors from the <a href="https://support.ntp.org">support.ntp.org</a> website.</p>
+
+<p>Another popular NTP implementation is <a href="https://chrony-project.org">chrony</a>. It is included as the default NTP server in RHEL since RHEL 7. Developed by Red Hat employees, chrony is a newer piece of software and is more actively developed, compared to the mature but stagnant state of ntpd. In a comparison page made by chrony, they claim to have better performance in terms of convergence (synchronization) speed and accuracy than ntpd.<sup id="fnref:Chrony"><a href="#fn:Chrony" class="footnote" rel="footnote" role="doc-noteref">6</a></sup></p>
+
+<p>Other prominent NTP server implementations include <a href="https://www.openntpd.org">OpenNTPD</a>, developed by the OpenBSD team, as well as <a href="https://www.ntpsec.org">NTPsec</a>, forked from ntpd with clean ups.</p>
+
+<p>On modern desktop Linux distributions, time synchronization is typically handled by <a href="https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html">systemd-timesyncd</a>. This is actually not a full NTP implementation, but a Simple Network Time Protocol (SNTP) client. SNTP is a subset of NTP that is oriented towards one-off operation. It does not implement the complex tracking algorithms as a full NTP implementation does.</p>
+
+<h2 id="security-issues-with-ntp">Security issues with NTP</h2>
+
+<p>The early Internet environment had a sense of trust and was much friendlier than today’s Internet, which is plagued by bots and malicious infiltrations. Early Internet protocols tend to be designed without security and defense mechanisms. Following the trend of encrypting Internet traffic (as seen with the uptake of HTTPS after 2015), Network Time Security (NTS) is an extension to NTP that uses TLS-based encryption to defend against man-in-the-middle (MITM) attacks. However, no major operating system has yet shipped NTS support in their default time synchronization services.</p>
+
+<p>NTP shares a common vulnerability with DNS: UDP-based protocols can be exploited for reflected amplification DDoS attacks through IP spoofing. Unlike TCP, which requires a bilateral handshake, UDP’s connectionless nature makes such attacks possible. The attack’s effectiveness is measured by the bandwidth amplification factor, which is the ratio between response and request packet sizes. Since late 2013, a feature in ntpd called “monlist” has been exploited as a vector for reflection attack, with amplification factor as high as 206x.<sup id="fnref:CFNTP"><a href="#fn:CFNTP" class="footnote" rel="footnote" role="doc-noteref">7</a></sup><sup id="fnref:GHouston14"><a href="#fn:GHouston14" class="footnote" rel="footnote" role="doc-noteref">8</a></sup> While this problematic feature has since been disabled by default in newer ntpd releases, the fundamental vulnerability of UDP to IP spoofing remains. This risk has been partially mitigated by increased adoption of network filtering practices, particularly <a href="https://datatracker.ietf.org/doc/html/rfc2827">BCP 38</a>, which prevents source address spoofing at network boundaries.</p>
+
+<p>Old and poorly maintained software often contains vulnerabilities that can be exploited to compromise a system. ntpd experienced such a critical vulnerability in 2014. The widespread impact of the OpenSSL <a href="https://en.wikipedia.org/wiki/Heartbleed">Heartbleed vulnerability</a> that same year increased industry awareness about the security risks of under-maintained infrastructure software, leading to funded security audits of several critical open-source projects.</p>
+
+<h2 id="ecosystem-of-ntp-service">Ecosystem of NTP service</h2>
+
+<p>NTP is the standard method to obtain time over the Internet. Major operating systems ship with default NTP servers operated by their respective companies, including <code class="language-plaintext highlighter-rouge">time.windows.com</code>, <code class="language-plaintext highlighter-rouge">time.apple.com</code> and <code class="language-plaintext highlighter-rouge">time.android.com</code>. National research institutes concerning time often provide a NTP server to serve the public. Several technology companies have also built and made available their own public NTP infrastructure, including Cloudflare, Facebook (currently known as Meta), Amazon, and others.</p>
+
+<p>Individuals can also set up NTP servers themselves using various time sources: In the past there were radio clock or second-hand atomic clock. It has been easier nowadays with the wide availability of GPS/GNSS receivers, which provide nanosecond-level accuracy as long as there is a clear view of the sky. The <a href="https://www.ntppool.org/en/">NTP Pool Project</a> serves as the major collective organization for these volunteer-operated NTP servers and is used by default in many Linux distributions. The project continuously monitors participating servers, removing those that fail to maintain sufficient time accuracy.<sup id="fnref:M22"><a href="#fn:M22" class="footnote" rel="footnote" role="doc-noteref">9</a></sup> The clients are directed to servers in the same country or region by a custom GeoDNS software.</p>
+
+<p>However, volunteer-run services are more susceptible to attacks and more likely to cease services. The growth of participant number stalled in 2014 due to the rise of NTP-based DDoS attacks. Abuses caused poorly configured devices or software have often made it into news, a collection of those can be found <a href="https://en.wikipedia.org/wiki/NTP_server_misuse_and_abuse">in Wikipedia</a>.</p>
+
+<p>While the NTP Pool Project does not publicly list participating server IP addresses on its website, researchers have compiled datasets of the network’s composition.<sup id="fnref:NL22"><a href="#fn:NL22" class="footnote" rel="footnote" role="doc-noteref">10</a></sup> Volunteers can choose which country zones to serve, and notable imbalance in server availability between countries can be observed.<sup id="fnref:NL24"><a href="#fn:NL24" class="footnote" rel="footnote" role="doc-noteref">11</a></sup></p>
+
+<p>Besides operational challenges, the NTP Pool is largely maintained by one man Ask Bjørn Hansen, and changes happen slowly. A longstanding issue was the reliance on a single monitoring location, which sometimes incorrectly flagged servers as unreliable due to network-specific connectivity issues. A new distributed monitoring system was finally deployed in 2023.<sup id="fnref:NN23"><a href="#fn:NN23" class="footnote" rel="footnote" role="doc-noteref">12</a></sup> Another ongoing challenge is IPv6 support: currently, only <code class="language-plaintext highlighter-rouge">2.pool.ntp.org</code> provides AAAA records,<sup id="fnref:GC"><a href="#fn:GC" class="footnote" rel="footnote" role="doc-noteref">13</a></sup> despite <a href="https://community.ntppool.org/t/the-time-has-come-we-must-enable-ipv6-entirely/1968">community requests</a> to enable IPv6 for all endpoints.</p>
+
+<p>The author would like to express his condolences to the memory of Professor David L. Mills.</p>
+
+<style>
+#markdown-content code {
+  text-decoration: underline;
+}
+/* Polyfill for Chromium. Attributes removed in MathML Core */
+.katex-mathml mtd {
+  padding: 0.25em 0;
+}
+.katex-mathml mtr {
+  margin: 0.25em 0;
+}
+.katex-mathml mtable[columnalign="right left"]>mtr>mtd:first-child {
+  text-align: right;
+}
+.katex-mathml mtable[columnalign="right left"]>mtr>mtd:nth-child(2) {
+  text-align: left;
+}
+</style>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:TI">
+      <p>Garrett Yamasaki, Rob Rodrigues. <a href="https://www.ti.com/document-viewer/lit/html/SSZTAU5">How to Implement IEEE 1588 Time Stamping in an Ethernet Transceiver</a>. SSZTAU5. Texas Instruments. 2023. <a href="#fnref:TI" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:DOCSISlatency2013">
+      <p>Greg White. <a href="https://www.internetsociety.org/wp-content/uploads/2013/09/ISOC_latency_docsis.pdf">Latency in DOCSIS Networks</a>. CableLabs. 2013-09-26. <a href="#fnref:DOCSISlatency2013" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:Mills12">
+      <p>David L. Mills. <a href="https://www.eecis.udel.edu/~mills/time.html">NTP Timestamp Calculations</a>. 2012-05-26. <a href="#fnref:Mills12" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:N15">
+      <p>Charles Babcock. <a href="https://www.informationweek.com/it-leadership/ntp-s-fate-hinges-on-father-time-">NTP’s Fate Hinges On ‘Father Time’</a>. InformationWeek. 2015-03-11. <a href="#fnref:N15" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:N22">
+      <p>Nate Hopper. <a href="https://www.newyorker.com/tech/annals-of-technology/the-thorny-problem-of-keeping-the-internets-time">The Thorny Problem of Keeping the Internet’s Time</a>. The New Yorker. 2022-09-30 <a href="#fnref:N22" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:Chrony">
+      <p><a href="https://chrony-project.org/comparison.html">Comparison of NTP implementations</a>. chrony. 2023-08-10. <a href="#fnref:Chrony" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:CFNTP">
+      <p><a href="https://www.cloudflare.com/learning/ddos/ntp-amplification-ddos-attack/">NTP amplification DDoS attack</a>. Cloudflare. <a href="#fnref:CFNTP" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:GHouston14">
+      <p>Geoff Huston, Randy Bush. <a href="https://labs.apnic.net/presentations/store/2014-02-25-ntpddos.pdf">NTP and Evil</a>. 2014 <a href="#fnref:GHouston14" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:M22">
+      <p>Jeonggyu Song, Jonghoon Kwon, Junbeom Hur. <a href="https://dl.acm.org/doi/abs/10.1145/3492866.3558586">Analysis of NTP pool monitoring system based on multiple monitoring stations</a>. MobiHoc ‘22. 2022. <a href="#fnref:M22" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:NL22">
+      <p>Giovane C. M. Moura, Marco Davids, Caspar Schutijser, Cristian Hesselman. <a href="https://www.sidnlabs.nl/downloads/5aPx86UtFmvKs6WE3LHwbU/acfcf45571436eca4eb924f62bdddc10/Diving_into_the_NTP_Pool.pdf">Diving into the NTP Pool</a>. 2022-02-03. <a href="#fnref:NL22" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:NL24">
+      <p>Giovane C. M. Moura, Marco Davids, Caspar Schutijser, Cristian Hesselman, John Heidemann, and Georgios Smaragdakis. <a href="https://dl.acm.org/doi/10.1145/3639041">Deep Dive into NTP Pool’s Popularity and Mapping</a>. POMACS. 2024. <a href="#fnref:NL24" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:NN23">
+      <p><a href="https://news.ntppool.org/2023/03/ntp-pool-monitoring-v2/">NTP Pool Monitoring v2</a>. NTP Pool News. 2023-03-20. <a href="#fnref:NN23" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:GC">
+      <p><span class="url"><a href="https://github.com/abh/ntppool/blob/prod-2024.10.0/lib/NP/Model/DnsRoot.pm#L182">https://github.com/abh/ntppool/blob/prod-2024.10.0/lib/NP/Model/DnsRoot.pm#L182</a></span> <a href="#fnref:GC" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+  </div>
+</article>
+<div id="post-nav">
+  
+  <div id="post-nav-next" class="post-nav-item post-nav-item-inactive">|&larr;</div>
+  
+  
+  <div id="post-nav-prev" class="post-nav-item"><a href="/2026/06/deng/">26岁，早已不再是学生？ &rarr;</a></div>
+  
+</div>
+
+</div>
+
+</main>
+<aside id="site-sidebar">
+<section id="link-icon">
+  <ul class="horizontal-list">
+    <li><a href="/feed.xml" title="Atom Feed"><svg class="icon" viewBox="0 0 448 512" style="color: #ee802f;"><title>Feed Icon</title><use xlink:href="/assets/icons/sprites.svg#feed"></use></svg></a></li>
+    <li><a href="https://github.com/csalinezh" title="GitHub Profile"><svg class="icon" viewBox="0 0 496 512"><title>GitHub Logo</title><use xlink:href="/assets/icons/sprites.svg#github"></use></svg></a></li>
+  </ul>
+</section>
+
+<section id="recent-posts">
+  <h2>Recent Posts</h2>
+  <ol class="vertical-list">
+  
+    <li><a href="/2026/07/ntp/">Overview of NTP</a></li>
+  
+    <li><a href="/2026/06/deng/">26岁，早已不再是学生？</a></li>
+  
+    <li><a href="/2020/08/wechat-platform-url/">微信公众号文章URL的种类与结构</a></li>
+  
+    <li><a href="/2020/08/hello-world/">Hello, World!</a></li>
+  
+  </ol>
+</section>
+
+<section id="category-list">
+  <h2>Categories</h2>
+  <ul class="vertical-list">
+  
+    
+    <li><a href="/category/随笔/">随笔</a></li>
+  
+    
+    <li><a href="/category/it/">IT</a></li>
+  
+  </ul>
+</section>
+
+</aside>
+</div>
+<footer class="site-footer-wrapper">
+  <div id="license" class="content-container">
+  若无另行说明，本站内容以<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享-署名-相同方式共享 4.0 协议国际版</a>授权。
+  </div>
+</footer>
+</body>
