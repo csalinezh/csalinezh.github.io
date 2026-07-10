@@ -1,4 +1,4 @@
-<article class="entry">
+<article class="entry" {% if post.lang %}lang="{{ post.lang }}"{% endif %}>
   <header class="entry-header">
     {% if post.image %}
     <div class="entry-image">
@@ -12,7 +12,7 @@
   <div class="entry-excerpt">
     {% if post.excerpt %}
       {{ post.excerpt | markdownify | strip_html }}
-      <div class="read-more"><a href="{{ post.url | relative_url }}" class="more-link">&gt; 阅读全文</a></div>
+      <div class="read-more"><a href="{{ post.url | relative_url }}" class="more-link"><span class="code">&gt; </span>阅读全文</a></div>
     {% endif %}
   </div>
   <footer class="entry-meta">
