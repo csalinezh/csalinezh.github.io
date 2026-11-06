@@ -5,7 +5,11 @@
 <header class="site-header-wrapper">
 <div id="site-header" class="content-container">
   <div class="site-title-container">
+  {% if page.layout == 'home' %}
     <h1 id="site-title"><a href="{{ site.baseurl }}">{{ site.title }}</a></h1>
+  {% else %}
+    <div id="site-title"><a href="{{ site.baseurl }}">{{ site.title }}</a></div>
+  {% endif %}
     <div id="site-tagline">{{ site.tagline }}</div>
   </div>
   {% comment %} FIXME: Properly implement page list {% endcomment %}
@@ -59,7 +63,7 @@
 </div>
 <footer class="site-footer-wrapper">
   <div id="license" class="content-container">
-  若无另行说明，本站内容以<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">知识共享-署名-相同方式共享 4.0 协议国际版</a>授权。
+  若无另行说明，本站内容以<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>授权。
   </div>
 </footer>
 </body>
