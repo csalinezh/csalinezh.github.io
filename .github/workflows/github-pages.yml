@@ -7,16 +7,20 @@ on:
 
 jobs:
   github-pages:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
+    env:
+      JEKYLL_ENV: production
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
         with:
-          path: vendor/bundle
-          key: >-
-            ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: >-
-            ${{ runner.os }}-gems-
-      - uses: joshlarsen/jekyll4-deploy-gh-pages@v1.9
+          ruby-version: '3.4'
+          bundler-cache: true
+      - name: Build site
+        run: |
+          bundle exec jekyll build --trace \
+            --destination "$RUNNER_TEMP/site"
+      - name: Publish to master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash .github/publish-site.sh "$RUNNER_TEMP/site"

@@ -3,10 +3,10 @@ layout: default
 ---
 
 {% if page.type != "category" %}
-<h2 class="section-title">文章归档</h2>
+<h1 class="section-title">文章归档</h1>
 {% assign post_list = site.posts %}
 {% else %}
-<h2 class="section-title">分类：{{ page.title }}</h2>
+<h1 class="section-title">分类：{{ page.title }}</h1>
 {% assign post_list = page.posts %}
 {% endif %}
 

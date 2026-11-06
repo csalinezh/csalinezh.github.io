@@ -1,7 +1,7 @@
 <article class="entry-lite">
   <time class="entry-lite-timestamp" datetime="{{ post.date | date_to_xmlschema }}" title="Published at {{ post.date | date: "%F %R" }}">{{ post.date | date: "%F" }}</time>
   <div class="entry-lite-content">
-    <h3 class="entry-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+    <h2 class="entry-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
     <div class="entry-meta">
     {% include page-meta-lite.html %}
     </div>
